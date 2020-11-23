@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/Christoph/Qt/5.15.1/gcc_64/include/"
+                "/home/Christoph/Qt/5.15.1/gcc_64/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
