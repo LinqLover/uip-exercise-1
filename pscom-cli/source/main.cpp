@@ -20,34 +20,21 @@
  * - prefer qDebug, qInfo, qWarning, qCritical, and qFatal for verbosity and console output.
  */
 
-
-/* TODOs
- * - adjust the application version using QCoreApplication::setApplicationVersion before creating an application object.
- * - make yourself familiar with semantic versioning, e.g., here https://semver.org/, since it can useful for CLIs.
- *   For example, it allows to detach the version number of the CLI from the version of the library used and may
- *   retain major version bumps (same CLI for different capabilities or naming of the used library).
- */
-
-
 int main(int argc, char *argv[])
 {
     qInstallMessageHandler(VerbosityHandler);
 
     // Setting the application name is not required, since, if not set, it defaults to the executable name.
     // QCoreApplication::setApplicationName("pscom-cli");
-
-    QCoreApplication::setApplicationVersion("0.0.0");
-
-    QCoreApplication a(argc, argv);
+    QCoreApplication::setApplicationVersion("1.0.0");
+    QCoreApplication app(argc, argv);
 
 
-    /* ToDo - have fun! */
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Photo system command-line tool");
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.process(app);
 
-	const auto vi = pscom::vi();
-    QTextStream stream(stdout);
-
-    stream << QObject::tr("version: ") << vi << Qt::endl;
-    stream.flush();
-
-    return a.exec();
+    return EXIT_SUCCESS;
 }
