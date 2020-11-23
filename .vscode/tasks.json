@@ -1,0 +1,63 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build pscom-cli",
+			"type": "shell",
+			"command": "/usr/bin/make",
+			"args": ["CONFIG+=debug"],
+			"options": {
+				"cwd": "${workspaceFolder}/pscom-cli"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "qmake",
+			"dependsOn": ["make pscom-cli", "build pscom"]
+		},
+		{
+			"label": "build pscom",
+			"type": "shell",
+			"command": "/usr/bin/make",
+			"args": ["CONFIG+=debug"],
+			"options": {
+				"cwd": "${workspaceFolder}/pscom"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "qmake",
+			"dependsOn": ["make pscom"]
+		},
+		{
+			"label": "make pscom-cli",
+			"type": "shell",
+			"command": "/usr/bin/qmake",
+			"args": ["CONFIG+=debug"],
+			"options": {
+				"cwd": "${workspaceFolder}/pscom-cli"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "qmake"
+		},
+		{
+			"label": "make pscom",
+			"type": "shell",
+			"command": "/usr/bin/qmake",
+			"args": ["CONFIG+=debug"],
+			"options": {
+				"cwd": "${workspaceFolder}/pscom"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "qmake"
+		}
+	]
+}

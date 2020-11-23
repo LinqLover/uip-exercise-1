@@ -1,0 +1,30 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch Qt Application",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/pscom-cli/bin/pscom-clid",
+			"args": [],
+			"stopAtEntry": false,
+			"cwd": "${workspaceFolder}/pscom-cli",
+			"environment": [
+				{
+					"name": "LD_LIBRARY_PATH",
+					"value": "../pscom/lib"
+				}
+			],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "Automatische Strukturierung und Einrückung für \"gdb\" aktivieren",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			],
+			"preLaunchTask": "build pscom-cli"
+		}
+	]
+}
