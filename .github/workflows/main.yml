@@ -6,7 +6,7 @@ jobs:
     container:
       image: docker://rabits/qt:5.15-desktop
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
     - name: What OS is running
       run: uname -a
     - name: What qt version do we have
