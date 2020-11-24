@@ -1,0 +1,24 @@
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: docker://rabits/qt:5.15-desktop
+      options: --user root
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build pscom
+      working-directory: ./pscom
+      run: |
+        qmake
+        make
+    - name: Build pscom-cli
+      working-directory: ./pscom-cli
+      run: |
+        qmake
+        make
+    - name: Run pscom-cli
+      env:
+        LD_LIBRARY_PATH: ./pscom/lib
+      run: ./pscom-cli/bin/pscom-cli version
