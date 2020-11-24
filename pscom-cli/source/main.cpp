@@ -51,10 +51,17 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;
     parser.setApplicationDescription("Photo system command-line tool");
-    parser.addHelpOption(); // TODO: Because we use parse() only, exit code for --help is 1!
-    //parser.addVersionOption();
+    auto optionHelp = parser.addHelpOption();
+    auto optionVersion = parser.addVersionOption();
     parser.addPositionalArgument("command", "run command");
     parser.parse(app.arguments());
+
+    if (parser.isSet(optionHelp)) {
+        parser.showHelp();
+    }
+    if (parser.isSet(optionVersion)) {
+        parser.showVersion();
+    }
 
     auto args = parser.positionalArguments();
     auto iArg = -1;
