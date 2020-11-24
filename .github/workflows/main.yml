@@ -1,0 +1,29 @@
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: docker://homdx/qt515:latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: What OS is running
+      run: uname -a
+    - name: What qt version do we have
+      run: |
+        which qmake
+        qmake --version
+    - name: Build pscom
+      working-directory: ./pscom
+      run: |
+        qmake
+        make
+    - name: Build pscom-cli
+      working-directory: ./pscom-cli
+      run: |
+        qmake
+        make
+    - name: Run pscom-cli
+      env:
+        LD_LIBRARY_PATH: ./pscom/lib
+      run: ./pscom-cli/pscom-cli --version
