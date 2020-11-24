@@ -8,11 +8,11 @@
 			"program": "${workspaceFolder}/pscom-cli/bin/pscom-clid",
 			"args": [],
 			"stopAtEntry": false,
-			"cwd": "${workspaceFolder}/pscom-cli",
+			"cwd": "${workspaceFolder}",
 			"environment": [
 				{
 					"name": "LD_LIBRARY_PATH",
-					"value": "../pscom/lib"
+					"value": "./pscom/lib"
 				}
 			],
 			"externalConsole": false,
