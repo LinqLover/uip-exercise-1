@@ -8,12 +8,6 @@ jobs:
       options: --user root
     steps:
     - uses: actions/checkout@v1
-    - name: What OS is running
-      run: uname -a
-    - name: What qt version do we have
-      run: |
-        which qmake
-        qmake --version
     - name: Build pscom
       working-directory: ./pscom
       run: |
@@ -24,8 +18,7 @@ jobs:
       run: |
         qmake
         make
-        find
     - name: Run pscom-cli
       env:
         LD_LIBRARY_PATH: ./pscom/lib
-      run: ./pscom-cli/bin/pscom-cli --version
+      run: ./pscom-cli/bin/pscom-cli version
