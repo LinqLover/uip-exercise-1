@@ -24,7 +24,8 @@ jobs:
       run: |
         qmake
         make
+        find
     - name: Run pscom-cli
       env:
         LD_LIBRARY_PATH: ./pscom/lib
-      run: ./pscom-cli/pscom-cli --version
+      run: ./pscom-cli/bin/pscom-cli --version
