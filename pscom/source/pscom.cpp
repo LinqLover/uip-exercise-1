@@ -170,7 +170,7 @@ QDateTime et(const QString & path)
     const auto t1 = fi.lastModified();
     const auto t2 = fi.metadataChangeTime();
 
-    if(t0 < t1 && t0 < t2) {
+    if(t0.isValid() && t0 < t1 && t0 < t2) {
         return t0;
     }
     if(t1 < t2) {
