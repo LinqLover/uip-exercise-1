@@ -4,7 +4,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: docker://homdx/qt515:latest
+      image: docker://rabits/qt:5.15-desktop
     steps:
     - uses: actions/checkout@v2
     - name: What OS is running
