@@ -1,4 +1,4 @@
-# uip-exercise-1
+# uip-exercise-1 ![.github/workflows/main.yml](https://github.com/LinqLover/uip-exercise-1/workflows/.github/workflows/main.yml/badge.svg)
 
 Application skeleton was provided by the chair for Computer Graphical Systems at Hasso Plattner Institute, Potsdam, in winter term 2020/21.
 
