@@ -98,7 +98,7 @@ bool PscomCommandLineParser::hasCommand() const {
 }
 
 void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
-    auto posArgs = positionalArguments();
+    QStringList posArgs = positionalArguments(), arguments;
 
     {
         const auto numPosArgs = posArgs.length() - 1;
@@ -110,8 +110,15 @@ void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
 
         int i = 0;
         QStringList missingParameters;
+        auto
+            defaultIt = _command->defaultValues.constBegin(),
+            defaultEnd = _command->defaultValues.constEnd();
         for (auto param : cmdParams) {
-            if (i++ >= numPosArgs) {
+            if (i++ < numPosArgs) {
+                arguments.append(posArgs[i]);
+            } else if (defaultIt != defaultEnd && *(defaultIt++) != nullptr) {
+                arguments.append(*(defaultIt - 1));
+            } else {
                 missingParameters.append(param);
             }
         }
@@ -122,10 +129,8 @@ void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
                     + missingParameters.join(", "));
         }
     }
-    
-    auto it = posArgs.constBegin();
-    it++; // skip command argument
-    _command->execute(engine, it, posArgs.constEnd());
+
+    _command->execute(engine, arguments);
 }
 
 QString PscomCommandLineParser::helpText() const {
@@ -144,8 +149,15 @@ QString PscomCommandLineParser::helpText() const {
             continue;
         QString syntaxText;
         syntaxText = command.names.join(", ");
+        auto
+            defaultIt = command.defaultValues.constBegin(),
+            defaultEnd = command.defaultValues.constEnd();
         for (auto param : command.parameters) {
-            syntaxText += " <" + param + "> ";
+            const auto placeholder = "<" + param + ">";
+            syntaxText += " " + (
+                (defaultIt != defaultEnd && *(defaultIt++) != nullptr)
+                    ? "[" + placeholder + "]"
+                    : placeholder);
         }
         text += "  " + syntaxText.leftJustified(maxWidth)
               + command.description + nl;
@@ -169,20 +181,24 @@ void PscomCommandLineParser::showVersion() const {
 PscomCommand::PscomCommand(
     const QStringList &names,
     const QStringList &parameters,
-    const QString &desciption
+    const QString &description,
+    const QStringList &defaultValues
 ) :
     names(QStringList(names)),
     parameters(QStringList(parameters)),
-    description(desciption)
+    description(description),
+    defaultValues(QStringList(defaultValues))
 {
+    assert(defaultValues.length() <= parameters.length());
 }
 
 PscomCommand::PscomCommand(
     const QStringList &names,
     const QStringList &parameters,
     const QString &description,
-    const std::function<void(void)> function
-) : PscomCommand(names, parameters, description)
+    const std::function<void(void)> function,
+    const QStringList &defaultValues
+) : PscomCommand(names, parameters, description, defaultValues)
 {
     _function_numArgs = 0;
     _function_p0 = function;
@@ -192,8 +208,9 @@ PscomCommand::PscomCommand(
     const QStringList &names,
     const QStringList &parameters,
     const QString &description,
-    const std::function<void(PscomEngine &)> function
-) : PscomCommand(names, parameters, description)
+    const std::function<void(PscomEngine &)> function,
+    const QStringList &defaultValues
+) : PscomCommand(names, parameters, description, defaultValues)
 {
     _function_numArgs = 1;
     _function_p1 = function;
@@ -203,8 +220,9 @@ PscomCommand::PscomCommand(
     const QStringList &names,
     const QStringList &parameters,
     const QString &description,
-    const std::function<void(PscomEngine &, QString)> function
-) : PscomCommand(names, parameters, description)
+    const std::function<void(PscomEngine &, QString)> function,
+    const QStringList &defaultValues
+) : PscomCommand(names, parameters, description, defaultValues)
 {
     _function_numArgs = 2;
     _function_p2 = function;
@@ -212,13 +230,8 @@ PscomCommand::PscomCommand(
 
 void PscomCommand::execute(
     PscomEngine &engine,
-    QList<QString>::const_iterator begin,
-    QList<QString>::const_iterator end
+    QStringList &arguments
 ) const {
-    QStringList arguments;
-    for(begin; begin != end; begin++) {
-        arguments.push_back(*begin);
-    }
     assert(!_function_numArgs
         ? !arguments.length()
         : arguments.length() + 1 == _function_numArgs);

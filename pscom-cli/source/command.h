@@ -37,7 +37,8 @@ private:
     PscomCommand(
         const QStringList &names,
         const QStringList &parameters,
-        const QString &description);
+        const QString &description,
+        const QStringList &defaultValues = QStringList());
 
     int _function_numArgs;
     std::function<void(void)> _function_p0;
@@ -48,25 +49,26 @@ public:
         const QStringList &names,
         const QStringList &parameters,
         const QString &description,
-        const std::function<void(void)> function);
+        const std::function<void(void)> function,
+        const QStringList &defaultValues = QStringList());
     PscomCommand(
         const QStringList &names,
         const QStringList &parameters,
         const QString &description,
-        const std::function<void(PscomEngine &)> function);
+        const std::function<void(PscomEngine &)> function,
+        const QStringList &defaultValues = QStringList());
     PscomCommand(
         const QStringList &names,
         const QStringList &parameters,
         const QString &description,
-        const std::function<void(PscomEngine &, QString)> function);
+        const std::function<void(PscomEngine &, QString)> function,
+        const QStringList &defaultValues = QStringList());
 
     QStringList names;
     QStringList parameters;
     QString description;
+    QStringList defaultValues;
     bool isHiddenFromHelp = false;
 
-    void execute(
-        PscomEngine &engine,
-        QList<QString>::const_iterator begin,
-        QList<QString>::const_iterator end) const;
+    void execute(PscomEngine &engine, QStringList &arguments) const;
 };
