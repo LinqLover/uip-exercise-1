@@ -63,7 +63,7 @@ public:
     QStringList names;
     QStringList parameters;
     QString description;
-    bool isHiddenFromHelp;
+    bool isHiddenFromHelp = false;
 
     void execute(
         PscomEngine &engine,
