@@ -18,7 +18,7 @@ Commands:
   copy <dest> - copy files into destination
   move <dest> - move files into destination
   rename [<scheme>] - rename images
-    <scheme> defaults to UPA file name standard `yyyyMMdd_HHmmsszzz.<ext>'
+    <scheme> defaults to UPA file name standard `yyyyMMdd_HHmmsszzz'
   group [<scheme>] - group images
     <scheme> defaults to UPA directory name standard `yyyy/yyyy-MM'
   group-static <name> - group images using static name
