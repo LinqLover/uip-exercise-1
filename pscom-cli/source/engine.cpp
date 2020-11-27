@@ -153,3 +153,14 @@ void PscomEngine::moveFiles(QString target) const {
         pscom::mv(file, path + QFileInfo(file).fileName());
     }
 };
+
+void PscomEngine::renameFiles(QString schema) const {
+    for (auto file : _files) {
+        const auto date = pscom::et(file);
+        const auto newName = pscom::fn(file, date, schema);
+        qDebug() << "mv" << file << newName;
+        if (file != newName) {
+            pscom::mv(file, newName);
+        }
+    }
+};

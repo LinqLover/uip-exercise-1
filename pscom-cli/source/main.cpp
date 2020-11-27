@@ -94,12 +94,19 @@ int main(int argc, char *argv[])
         QStringList{"destination"},
         "move files with a better description",
         &PscomEngine::moveFiles);
+    PscomCommand commandRename(
+        QStringList{"rename", "rn"},
+        QStringList{"schema"},
+        "rename files with a better description",
+        &PscomEngine::renameFiles,
+        QStringList{"yyyyMMdd_HHmmsszzz"});
     parser.addHelpCommand();
     parser.addVersionCommand();
     parser.addCommand(commandPscom);
     parser.addCommand(commandList);
     parser.addCommand(commandCopy);
     parser.addCommand(commandMove);
+    parser.addCommand(commandRename);
 
     parser.process();
 
