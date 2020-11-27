@@ -100,6 +100,12 @@ int main(int argc, char *argv[])
         "rename files with a better description",
         &PscomEngine::renameFiles,
         QStringList{"yyyyMMdd_HHmmsszzz"});
+    PscomCommand commandGroup(
+        QStringList{"group", "g"},
+        QStringList{"schema"},
+        "rename files with a better description",
+        &PscomEngine::groupFiles,
+        QStringList{"yyyy/yyyy-MM"});
     parser.addHelpCommand();
     parser.addVersionCommand();
     parser.addCommand(commandPscom);
@@ -107,6 +113,7 @@ int main(int argc, char *argv[])
     parser.addCommand(commandCopy);
     parser.addCommand(commandMove);
     parser.addCommand(commandRename);
+    parser.addCommand(commandGroup);
 
     parser.process();
 

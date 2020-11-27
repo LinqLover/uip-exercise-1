@@ -164,3 +164,20 @@ void PscomEngine::renameFiles(QString schema) const {
         }
     }
 };
+
+void PscomEngine::groupFiles(QString schema) const {
+    for (auto file : _files) {
+        const auto date = pscom::et(file);
+        const auto newName = pscom::fp(file, date.date(), schema);
+        if (file == newName) {
+            continue;
+        }
+        const auto dir = QFileInfo(newName).absolutePath();
+        if (!pscom::de(dir)) {
+            qDebug() << "mkdir" << dir;
+            pscom::mk(newName);
+        }
+        qDebug() << "mv" << file << newName;
+        pscom::mv(file, newName);
+    }
+};

@@ -26,6 +26,7 @@ public:
     void copyFiles(QString target) const;
     void moveFiles(QString target) const;
     void renameFiles(QString schema) const;
+    void groupFiles(QString schema) const;
 
     void findFiles(
         QString directory = ".",
