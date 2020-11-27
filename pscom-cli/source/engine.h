@@ -19,6 +19,7 @@ private:
 public:
     PscomEngine(PscomCli &app);
 
+    void pscom(QList<QString> arguments, int argOffset = 0) const;
     int showSupportedFormats() const;
     int showVersion() const;
     void listFiles() const;

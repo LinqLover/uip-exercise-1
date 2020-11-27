@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     // Setting the application name is not required, since, if not set, it defaults to the executable name.
     // QCoreApplication::setApplicationName("pscom-cli");
     QCoreApplication::setApplicationVersion("1.0.0");
-    PscomCli app(argc, argv); // TODO: Rename into PscomApp?
+    auto app = PscomCli(argc, argv); // TODO: Rename into PscomApp?
 
     PscomCommandLineParser parser(app);
     parser.setApplicationDescription("Photo system command-line tool");
@@ -74,6 +74,11 @@ int main(int argc, char *argv[])
     assert(parser.addOption(optionMinDate));
     assert(parser.addOption(optionMaxDate));
 
+    PscomCommand commandPscom(
+        QStringList{"pscom"},
+        QStringList{},
+        "pscom with a better description",
+        [](PscomEngine &engine){ engine.pscom(QStringList{}); });
     PscomCommand commandList(
         QStringList{"list", "ls"},
         QStringList{},
@@ -91,6 +96,7 @@ int main(int argc, char *argv[])
         &PscomEngine::moveFiles);
     parser.addHelpCommand();
     parser.addVersionCommand();
+    parser.addCommand(commandPscom);
     parser.addCommand(commandList);
     parser.addCommand(commandCopy);
     parser.addCommand(commandMove);
@@ -105,6 +111,11 @@ int main(int argc, char *argv[])
 
     if (!parser.hasCommand()) {
         parser.showHelp(EXIT_FAILURE);
+    }
+
+    if (parser.positionalArguments().first() == "pscom") {
+        engine.pscom(parser.positionalArguments(), 1);
+        return EXIT_SUCCESS;
     }
 
     const auto directory = parser.isSet(optionDirectory)
