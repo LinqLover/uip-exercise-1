@@ -13,6 +13,7 @@ PscomCommandLineParser::PscomCommandLineParser(PscomCli &app) :
 {
     _showVersion = [this](){ this->QCommandLineParser::showVersion(); };
 
+    addPositionalArgument("command", "The operation to perform.");
     addOption(QCommandLineOption(
         QStringList{"h", "help", "?"},
         "Displays help on command-line options."
