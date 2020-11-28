@@ -1,18 +1,27 @@
 
 #include "verbosity.h"
 
+#include <QCoreApplication>
 #include <QString>
-#include <QByteArray>
+#include <QTextStream>
 
 
-/* ToDo: this is only placeholder implementation showcasing how messages using qFatal, qCritical, qWarning, qInfo, and
- * qDebug could be handled. This might be a good starting point for verbosity handling and arbitrary output formatting.
- */
-void VerbosityHandler(QtMsgType type, const QMessageLogContext & /*context*/, const QString & message)
-{
-    auto prefix = QByteArray();
-    auto stream = stdout;
+void VerbosityHandler(
+    QtMsgType type,
+    const QMessageLogContext & context,
+    const QString & message
+) {
+#ifdef EXTREMELY_VERBOSE // TODO: Introduce command-line argument for this
+    qSetMessagePattern("%{appname}: %{type}: %{if-category}%{category}: %{endif}%{message}\n  In: %{file}:%{line} in function %{function}\n  Backtrace:\n    %{backtrace separator=\"\n    \"}");
+#else
+    qSetMessagePattern("%{appname}: %{type}: %{if-category}%{category}: %{endif}%{message}");
+#endif
 
+    // streaming info messages on stderr does not do big harm, but logging
+    // them to stdout would impede batch processing.
+    auto stream = QTextStream(stderr);
+
+    // TODO: Use color
     switch (type) {
     case QtDebugMsg:
         break;
@@ -26,6 +35,5 @@ void VerbosityHandler(QtMsgType type, const QMessageLogContext & /*context*/, co
         break;
     }
 
-    const auto local = message.toLocal8Bit();
-    fprintf(stream, "%s\n", local.constData());
+    stream << qFormatLogMessage(type, context, message) << Qt::endl;
 }
