@@ -13,3 +13,21 @@ QStringList intersection(const QList<QStringList> &vecs) {
     }
     return last_intersection;
 }
+
+// TODO: Support more types (reinvention of qdebug)
+QString variantToString(const QVariant variant) {
+    if (variant.userType() == QMetaType::QString) {
+        return '"' + variant.toString() + '"';
+    }
+    if (variant.canConvert(QMetaType::QVariantList)) {
+        const auto list = variant.toList();
+        QStringList strings;
+        strings.reserve(list.size());
+        std::transform(list.begin(), list.end(), std::back_inserter(strings), variantToString);
+        return "{" + strings.join(", ") + "}";
+    }
+    if (variant.userType() == QMetaType::QRegExp) {
+        return "QRegExp(" + variantToString(variant.toRegExp().pattern()) + ")";
+    }
+    return variant.toString();
+}

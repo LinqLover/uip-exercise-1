@@ -44,3 +44,5 @@ _61,_62,_63,N,...) N
 
 
 QStringList intersection(const QList<QStringList> &vecs);
+
+QString variantToString(const QVariant variant);
