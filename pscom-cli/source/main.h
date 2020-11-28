@@ -13,5 +13,4 @@ public:
 
     QTextStream cout() const;
     QTextStream cerr() const;
-    Q_NORETURN void showError(QString errorText) const;
 };

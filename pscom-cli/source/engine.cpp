@@ -42,16 +42,15 @@ PscomEngine::PscomEngine(PscomCli &app)
 void PscomEngine::pscom(QList<QString> arguments, int argOffset) const {
     auto argCounter = argOffset;
     if (argCounter >= arguments.length()) {
-        _app->showError("usage: pscom <symbol> <argument>*");
+        qFatal("usage: %s", "pscom <symbol> <argument>*");
     }
     const auto symbol = arguments[argCounter++];
 
 {// INSANE_MACRO_MAGIC_TO_COMPENSATE_THE_ABSENCE_OF_REFLECTION_IN_CPP_AAAH
     #define ASSERT_ARGC(NUMBER) \
         if (arguments.length() - 1 - argOffset != NUMBER) { \
-        _app->showError(QString( \
-            "Invalid number of arguments (expected %1, but got %2)" \
-        ).arg(NUMBER).arg(arguments.length() - argOffset - 1)); \
+        qFatal("Invalid number of arguments (expected %i, but got %i)", \
+            NUMBER, arguments.length() - argOffset - 1); \
     }
 
     #define _INIT_ARG_2(I, X, C) auto arg ## I = X(arguments[argCounter++]);
@@ -94,9 +93,10 @@ void PscomEngine::pscom(QList<QString> arguments, int argOffset) const {
     else HANDLE_SYMBOL(ss, QString, TYPE_INT, TYPE_INT)
     else HANDLE_SYMBOL(cf, QString, QString, TYPE_INT)
     else HANDLE_SYMBOL(re, QString, QRegExp, TYPE_BOOL)
-    else HANDLE_SYMBOL(dt, QString, TYPE_QDATE(QDateTime), TYPE_QDATE(QDateTime), TYPE_BOOL)
+    else HANDLE_SYMBOL(dt, QString, TYPE_QDATE(QDateTime),
+        TYPE_QDATE(QDateTime), TYPE_BOOL)
     else {
-        _app->showError("pscom: " + QString("Unknown symbol: ") + symbol);
+        qFatal("pscom: " "Unknown symbol: %s", symbol.toUtf8().constData());
     }
 }//
 }
@@ -122,7 +122,7 @@ void PscomEngine::findFiles(
 ) {
     if (directory == "-") {
         if (bool(dateMin) || bool(dateMax) || bool(regex)) {
-            _app->showError("Filter options and stdin cannot be combined");
+            qFatal("Filter options and stdin cannot be combined");
         }
         QTextStream cin(stdin);
         while (!cin.atEnd()) {
@@ -200,7 +200,7 @@ void PscomEngine::groupFiles(QString schema) const {
 
 void PscomEngine::resizeFiles(int width, int height) const {
     if (width == -1 && height == -1) {
-        _app->showError("Either width or height must be specified");
+        qFatal("Either width or height must be specified");
     }
     if (width != -1 && height != -1) {
         for (auto file : _files) {
@@ -223,7 +223,7 @@ void PscomEngine::resizeFiles(int width, int height) const {
 
 void PscomEngine::convertFiles(QString format, int quality) const {
     if (format == nullptr && quality == -1) {
-        _app->showError("No conversion options specified");
+        qFatal("No conversion options specified");
     }
     if (format == nullptr) {
         for (auto file : _files) {

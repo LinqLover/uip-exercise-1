@@ -1,5 +1,6 @@
 #include "command.h"
 
+#include <QDebug>
 #include <QTextStream>
 
 #include "engine.h"
@@ -53,9 +54,7 @@ PscomCommand PscomCommandLineParser::addHelpCommand(void) {
 void PscomCommandLineParser::process(const QStringList &arguments)
 {
     if (!parse(arguments)) {
-        _app->showError(errorText());
-        //qt_call_post_routines(); // Not available
-        ::exit(EXIT_FAILURE);
+        qFatal("%s", errorText().toUtf8().constData());
     }
 
     if (isSet(QStringLiteral("version"))) {
@@ -81,9 +80,7 @@ void PscomCommandLineParser::process(const QStringList &arguments)
             }
         }
         if (!command) {
-            _app->showError("Unknown command: " + cmdName);
-            //qt_call_post_routines(); // Not available
-            ::exit(EXIT_FAILURE);
+            qFatal("Unknown command: %s", cmdName.toUtf8().constData());
         }
         _command = command;
     }
@@ -106,7 +103,7 @@ void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
         const auto cmdParams = _command->parameters;
 
         if (numPosArgs > cmdParams.length()) {
-            _app->showError("Too many arguments");
+            qFatal("Too many arguments");
         }
 
         int i = 0;
@@ -124,10 +121,10 @@ void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
             }
         }
         if (!missingParameters.isEmpty()) {
-            _app->showError((missingParameters.size() == 1
-                ? "Missing argument: "
-                : "Missing arguments: ")
-                    + missingParameters.join(", "));
+            qFatal((missingParameters.size() == 1
+                    ? "Missing argument: %s"
+                    : "Missing arguments: %s"),
+                missingParameters.join(", ").toUtf8().constData());
         }
     }
 

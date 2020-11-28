@@ -237,10 +237,3 @@ QTextStream PscomCli::cout() const {
 QTextStream PscomCli::cerr() const {
     return QTextStream(stderr);
 }
-
-Q_NORETURN void PscomCli::showError(QString errorText) const {
-    cerr() << PscomCli::applicationName() + QLatin1String(": ")
-            + errorText + QLatin1Char('\n');
-    cerr().flush();
-    std::exit(EXIT_FAILURE);
-}
