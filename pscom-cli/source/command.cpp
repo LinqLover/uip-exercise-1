@@ -144,7 +144,7 @@ QString PscomCommandLineParser::helpText() const {
     const auto nl = QLatin1Char('\n');
     text += nl;
     text += QCommandLineParser::tr("Commands:") + nl;
-    const int maxWidth = 25;
+    const int maxWidth = 28;
     for (auto command : _commands) {
         if (command.isHiddenFromHelp)
             continue;

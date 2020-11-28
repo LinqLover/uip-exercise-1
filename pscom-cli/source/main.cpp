@@ -41,50 +41,56 @@ int main(int argc, char *argv[])
 
     QCommandLineOption optionSupportedFormats(
         QStringList{"supported-formats"},
-        "Displays all supported image formats."
+        "Display all supported image formats."
     );
     QCommandLineOption optionDirectory(
         QStringList{"d", "C", "directory"},
-        "The directory where the files should be searched.",
-        "directory"
+        "The directory to look up image files.",
+        "path"
     );
     QCommandLineOption optionRecursive(
-        QStringList{"r", "recursive"},
-        "Search subdirectories"
+        QStringList{"R", "recursive"},
+        "Include subdirectories."
     );
     QCommandLineOption optionRegex(
-        QStringList{"re", "regex"},
-        "Filter files by regex",
-        "regex"
+        QStringList{"r", "regex"},
+        QString(
+            "A regular expression to filter image files. Must not match the "
+            "entire file name; use text anchors (%1) for full matches."
+        ).arg("^ $"),
+        "pattern"
     );
     QCommandLineOption optionMinDate(
         QStringList{"mi", "min-date"},
-        "Reject images older than",
+        "Reject images older than the given date and time.",
         "date"
     );
     QCommandLineOption optionMaxDate(
         QStringList{"ma", "max-date"},
-        "Reject images newer than",
+        "Reject images newer than the given date and time. NOTE: If you only "
+        "specify the date, it will be treated as midnight time.",
         "date"
     );
     QCommandLineOption optionWidth(
         QStringList{"max-width"},
-        "describe width",
-        "width"
+        "the width the images should be fit into",
+        "number"
     );
     QCommandLineOption optionHeight(
         QStringList{"max-height"},
-        "describe height",
-        "height"
+        "The height the images should be fit into.",
+        "number"
     );
     QCommandLineOption optionFormat(
         QStringList{"format"},
-        "describe format",
+        "The file format (e.g. jpg or png) the images should be converted "
+        "into.",
         "extension"
     );
     QCommandLineOption optionQuality(
         QStringList{"quality"},
-        "describe quality",
+        "The quality for image conversion. Value between 0 (best compression) "
+        "and 100 (best quality).",
         "value"
     );
     assert(parser.addOption(optionSupportedFormats));
@@ -100,40 +106,47 @@ int main(int argc, char *argv[])
 
     PscomCommand commandPscom(
         QStringList{"pscom"},
-        QStringList{},
-        "pscom with a better description",
+        QStringList{"symbol", "arguments"},
+        "Execute a symbol from the pscom library manually. No safety checks! "
+        "Intended for development use only.",
         [](PscomEngine &engine){ engine.pscom(QStringList{}); });
     PscomCommand commandList(
         QStringList{"list", "ls"},
         QStringList{},
-        "list files with a better description",
+        "Display image files.",
         &PscomEngine::listFiles);
     PscomCommand commandCopy(
         QStringList{"copy", "cp"},
         QStringList{"destination"},
-        "copy files with a better description",
+        "Copy image files into the specified destination folder.",
         &PscomEngine::copyFiles);
     PscomCommand commandMove(
         QStringList{"move", "mv"},
         QStringList{"destination"},
-        "move files with a better description",
+        "Move image files into the specified destination folder.",
         &PscomEngine::moveFiles);
+    const auto escapeNote = QString(
+        "To escape format selectors in the schema, enclose constant parts "
+        "into single quotes (%1, or %2 from the bash shell)."
+    ).arg("'").arg("\"'\"");
     PscomCommand commandRename(
         QStringList{"rename", "rn"},
         QStringList{"schema"},
-        "rename files with a better description",
+        "Rename image files according to the given schema, or according to "
+        "the UPA standard, if omitted. " + escapeNote,
         &PscomEngine::renameFiles,
         QStringList{"yyyyMMdd_HHmmsszzz"});
     PscomCommand commandGroup(
         QStringList{"group", "g"},
         QStringList{"schema"},
-        "group files with a better description",
+        "Group image files into subdirectories according to the given "
+        "schema, or according to the UPA standard, if omitted. " + escapeNote,
         &PscomEngine::groupFiles,
         QStringList{"yyyy/yyyy-MM"});
     PscomCommand commandResize(
         QStringList{"resize"},
         QStringList{},
-        "resize files with a better description",
+        "Resize image files into the given dimensions.",
         [&parser, &optionWidth, &optionHeight](PscomEngine &engine){
             engine.resizeFiles(
                 parser.isSet(optionWidth)
@@ -146,7 +159,7 @@ int main(int argc, char *argv[])
     PscomCommand commandConvert(
         QStringList{"convert"},
         QStringList{},
-        "convert files with a better description",
+        "Convert image files into a different file format and/or quality.",
         [&parser, &optionFormat, &optionQuality](PscomEngine &engine){
             engine.convertFiles(
                 parser.isSet(optionFormat)
