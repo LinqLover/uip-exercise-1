@@ -204,3 +204,33 @@ void PscomEngine::resizeFiles(int width, int height) const {
         assert(false); // Should not reach here
     }
 }
+
+void PscomEngine::convertFiles(QString format, int quality) const {
+    if (format == nullptr && quality == -1) {
+        _app->showError("No conversion options specified");
+    }
+    if (format == nullptr) {
+        for (auto file : _files) {
+            // Workaround with double conversion to compensate inconvenient
+            // pscom interface. See
+            // https://moodle.hpi3d.de/mod/forum/discuss.php?d=2135#p4151.
+            const auto oldFormat = pscom::fs(file);
+            const auto tmpFormat = oldFormat == "jpg" ? "png" : "jpg";
+            assert(tmpFormat != oldFormat);
+            qDebug() << "cf" << file << tmpFormat << quality;
+            pscom::cf(file, tmpFormat, quality);
+            const auto tmpFile = pscom::cs(file, tmpFormat);
+            qDebug() << "rm" << file;
+            pscom::rm(file);
+            qDebug() << "cf" << tmpFile << oldFormat << quality;
+            pscom::cf(tmpFile, oldFormat, quality);
+            qDebug() << "rm" << tmpFile;
+            pscom::rm(tmpFile);
+        }
+    } else {
+        for (auto file : _files) {
+            qDebug() << "cf" << file << format << quality;
+            pscom::cf(file, format, quality);
+        }
+    }
+}

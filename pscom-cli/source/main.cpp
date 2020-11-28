@@ -77,6 +77,16 @@ int main(int argc, char *argv[])
         "describe height",
         "height"
     );
+    QCommandLineOption optionFormat(
+        QStringList{"format"},
+        "describe format",
+        "extension"
+    );
+    QCommandLineOption optionQuality(
+        QStringList{"quality"},
+        "describe quality",
+        "value"
+    );
     assert(parser.addOption(optionSupportedFormats));
     assert(parser.addOption(optionDirectory));
     assert(parser.addOption(optionRecursive));
@@ -85,6 +95,8 @@ int main(int argc, char *argv[])
     assert(parser.addOption(optionMaxDate));
     assert(parser.addOption(optionWidth));
     assert(parser.addOption(optionHeight));
+    assert(parser.addOption(optionFormat));
+    assert(parser.addOption(optionQuality));
 
     PscomCommand commandPscom(
         QStringList{"pscom"},
@@ -131,6 +143,19 @@ int main(int argc, char *argv[])
                     ? parser.value(optionHeight).toInt()
                     : -1);
         });
+    PscomCommand commandConvert(
+        QStringList{"convert"},
+        QStringList{},
+        "convert files with a better description",
+        [&parser, &optionFormat, &optionQuality](PscomEngine &engine){
+            engine.convertFiles(
+                parser.isSet(optionFormat)
+                    ? parser.value(optionFormat)
+                    : nullptr,
+                parser.isSet(optionQuality)
+                    ? parser.value(optionQuality).toInt()
+                    : -1);
+        });
     parser.addHelpCommand();
     parser.addVersionCommand();
     parser.addCommand(commandPscom);
@@ -140,6 +165,7 @@ int main(int argc, char *argv[])
     parser.addCommand(commandRename);
     parser.addCommand(commandGroup);
     parser.addCommand(commandResize);
+    parser.addCommand(commandConvert);
 
     parser.process();
 

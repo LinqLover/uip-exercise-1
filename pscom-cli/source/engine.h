@@ -27,7 +27,8 @@ public:
     void moveFiles(QString target) const;
     void renameFiles(QString schema) const;
     void groupFiles(QString schema) const;
-    void resizeFiles(int width, int height) const;
+    void resizeFiles(int width = -1, int height = -1) const;
+    void convertFiles(QString format = nullptr, int quality = -1) const;
 
     void findFiles(
         QString directory = ".",
