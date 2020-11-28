@@ -181,3 +181,26 @@ void PscomEngine::groupFiles(QString schema) const {
         pscom::mv(file, newName);
     }
 };
+
+void PscomEngine::resizeFiles(int width, int height) const {
+    if (width == -1 && height == -1) {
+        _app->showError("Either width or height must be specified");
+    }
+    if (width != -1 && height != -1) {
+        for (auto file : _files) {
+            pscom::ss(file, width, height);
+        }
+    } else if (width != -1) {
+        assert(height == -1);
+        for (auto file : _files) {
+            pscom::sw(file, width);
+        }
+    } else if (height != -1) {
+        assert(width == -1);
+        for (auto file : _files) {
+            pscom::sh(file, height);
+        }
+    } else {
+        assert(false); // Should not reach here
+    }
+}

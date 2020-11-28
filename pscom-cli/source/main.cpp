@@ -67,12 +67,24 @@ int main(int argc, char *argv[])
         "Reject images newer than",
         "date"
     );
+    QCommandLineOption optionWidth(
+        QStringList{"max-width"},
+        "describe width",
+        "width"
+    );
+    QCommandLineOption optionHeight(
+        QStringList{"max-height"},
+        "describe height",
+        "height"
+    );
     assert(parser.addOption(optionSupportedFormats));
     assert(parser.addOption(optionDirectory));
     assert(parser.addOption(optionRecursive));
     assert(parser.addOption(optionRegex));
     assert(parser.addOption(optionMinDate));
     assert(parser.addOption(optionMaxDate));
+    assert(parser.addOption(optionWidth));
+    assert(parser.addOption(optionHeight));
 
     PscomCommand commandPscom(
         QStringList{"pscom"},
@@ -106,6 +118,19 @@ int main(int argc, char *argv[])
         "rename files with a better description",
         &PscomEngine::groupFiles,
         QStringList{"yyyy/yyyy-MM"});
+    PscomCommand commandResize(
+        QStringList{"resize"},
+        QStringList{},
+        "resize files with a better description",
+        [&parser, &optionWidth, &optionHeight](PscomEngine &engine){
+            engine.resizeFiles(
+                parser.isSet(optionWidth)
+                    ? parser.value(optionWidth).toInt()
+                    : -1,
+                parser.isSet(optionHeight)
+                    ? parser.value(optionHeight).toInt()
+                    : -1);
+        });
     parser.addHelpCommand();
     parser.addVersionCommand();
     parser.addCommand(commandPscom);
@@ -114,6 +139,7 @@ int main(int argc, char *argv[])
     parser.addCommand(commandMove);
     parser.addCommand(commandRename);
     parser.addCommand(commandGroup);
+    parser.addCommand(commandResize);
 
     parser.process();
 
