@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     PscomCommand commandGroup(
         QStringList{"group", "g"},
         QStringList{"schema"},
-        "rename files with a better description",
+        "group files with a better description",
         &PscomEngine::groupFiles,
         QStringList{"yyyy/yyyy-MM"});
     PscomCommand commandResize(
