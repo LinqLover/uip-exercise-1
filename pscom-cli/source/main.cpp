@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
             parser.value(optionMaxDate), Qt::ISODateWithMs))
         : std::nullopt;
     const auto regex = parser.isSet(optionRegex)
-        ? std::make_optional(QRegExp(parser.value(optionRegex)))
+        ? std::make_optional(QRegExp(".*" + parser.value(optionRegex) + ".*"))
         : std::nullopt;
 
     engine.findFiles(directory, recursive, dateMin, dateMax, regex);
