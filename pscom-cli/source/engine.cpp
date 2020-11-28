@@ -37,19 +37,21 @@ void PscomEngine::pscom(QList<QString> arguments, int argOffset) const {
             "Invalid number of arguments (expected %1, but got %2)" \
         ).arg(NUMBER).arg(arguments.length() - argOffset - 1)); \
     }
-    
+
     #define COMMA() ,
-    #define NOCOMMA()
+    #define EMPTY()
     #define _INIT_ARG(I, X, C) auto arg ## I = X(arguments[argCounter++]);
     #define _PRN_ARG(I, X, C) arg ## I C()
     #define _STRM_ARG(I, X, C) << arg ## I C
     #define HANDLE_SYMBOL(NAME, ...) if (symbol == #NAME) { \
         ASSERT_ARGC(__VA_NARG__(__VA_ARGS__)); \
-        _FOR_EACH(_INIT_ARG, NOCOMMA, NOCOMMA, ##__VA_ARGS__) \
-        _app->cout() << symbol; \
-        qInfo() << "(" _FOR_EACH(_STRM_ARG, << ",", , ##__VA_ARGS__) << ")"; \
-        qInfo() << pscom::NAME( \
-            _FOR_EACH(_PRN_ARG, COMMA, NOCOMMA, ##__VA_ARGS__)); \
+        _FOR_EACH(_INIT_ARG, EMPTY, EMPTY, ##__VA_ARGS__); \
+        _app->cout() << "< " << symbol; \
+        qInfo().nospace() << "(" _FOR_EACH( \
+                _STRM_ARG, << ", ", , ##__VA_ARGS__ \
+            ) << ")"; \
+        qInfo().nospace() << "> " << pscom::NAME( \
+            _FOR_EACH(_PRN_ARG, COMMA, EMPTY, ##__VA_ARGS__)); \
     }
 
     #define TYPE_BOOL [](QString s) { return QVariant(s).toBool(); }
