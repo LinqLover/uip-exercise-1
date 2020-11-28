@@ -40,6 +40,9 @@ _61,_62,_63,N,...) N
 #define _FOR_EACH(action, C, NC, ...) __GET_MACRO( \
 		_0, ##__VA_ARGS__, FE_5, FE_4, FE_3, FE_2, FE_1, FE_0, \
 	)(action, C, NC, ##__VA_ARGS__)
+
+#define STRINGIFY_(X) #X
+#define STRINGIFY(X) STRINGIFY_(X)
 // END Insane pragma stuff
 
 

@@ -17,17 +17,19 @@
 #define QDATETIME_MIN QDateTime()
 #define QDATETIME_MAX QDateTime::fromSecsSinceEpoch(185542587187199999)
 
+#define PSCOM pscom
+
 #define COMMA() ,
 #define EMPTY()
 #define _INIT_ARG(I, X, C) auto arg ## I = (X);
 #define _PRN_ARG(I, X, C) arg ## I C()
 #define _STRM_ARG(I, X, C) << arg ## I C
-#define PSCOM(SYMBOL, ...) [&](){ \
+#define _PSCOM(SYMBOL, ...) [&](){ \
     _FOR_EACH(_INIT_ARG, , , ##__VA_ARGS__); \
-    qDebug().nospace() << "pscom::" #SYMBOL << "(" _FOR_EACH( \
+    qDebug().nospace() << STRINGIFY(PSCOM) "::" #SYMBOL << "(" _FOR_EACH( \
         _STRM_ARG, << ", ", , ##__VA_ARGS__ \
     ) << ")"; \
-    return pscom::SYMBOL( \
+    return PSCOM::SYMBOL( \
         _FOR_EACH(_PRN_ARG, COMMA, EMPTY, ##__VA_ARGS__)); \
 }()
 
@@ -61,7 +63,7 @@ void PscomEngine::pscom(QList<QString> arguments, int argOffset) const {
                 _STRM_ARG_2, + ", ", , ##__VA_ARGS__ \
             ) + ")" << '\n'; \
         _app->cout() << "> " << variantToString(pscom::NAME( \
-            /* NOTE: It would be nice to reuse PSCOM here, but then macro \
+            /* NOTE: It would be nice to reuse _PSCOM here, but then macro \
                expansion won't work as expected ... ;-( */ \
             _FOR_EACH(_PRN_ARG, COMMA, EMPTY, ##__VA_ARGS__))) << '\n'; \
     }
@@ -100,12 +102,12 @@ void PscomEngine::pscom(QList<QString> arguments, int argOffset) const {
 }
 
 int PscomEngine::showVersion() const {
-    _app->cout() << PSCOM(vi) << Qt::endl;
+    _app->cout() << _PSCOM(vi) << Qt::endl;
     return EXIT_SUCCESS;
 }
 
 int PscomEngine::showSupportedFormats() const {
-    auto supportedFormats = PSCOM(sf);
+    auto supportedFormats = _PSCOM(sf);
     for (auto format : supportedFormats) {
         _app->cout() << format << Qt::endl;
     }
@@ -131,20 +133,20 @@ void PscomEngine::findFiles(
 
     QList<QStringList> fileLists;
     if (bool(dateMin) || bool(dateMax)) {
-        fileLists.append(PSCOM(dt,
+        fileLists.append(_PSCOM(dt,
             directory,
             dateMin.value_or(QDATETIME_MIN),
             dateMax.value_or(QDATETIME_MAX),
             recursive));
     }
     if (regex) {
-        fileLists.append(PSCOM(re,
+        fileLists.append(_PSCOM(re,
             directory,
             regex.value(),
             recursive));
     }
     _files = fileLists.isEmpty()
-        ? PSCOM(re, directory, QRegExp(".*"), recursive)
+        ? _PSCOM(re, directory, QRegExp(".*"), recursive)
         : intersection(fileLists);
 }
 
@@ -157,7 +159,7 @@ void PscomEngine::listFiles() const {
 void PscomEngine::copyFiles(QString target) const {
     const auto path = target + QDir::separator();
     for (auto file : _files) {
-        PSCOM(cp, file, path + QFileInfo(file).fileName());
+        _PSCOM(cp, file, path + QFileInfo(file).fileName());
     }
 };
 
@@ -166,35 +168,33 @@ void PscomEngine::moveFiles(QString target) const {
     for (auto file : _files) {
         const auto newName = path + QFileInfo(file).fileName();
         if (file != newName) {
-            PSCOM(mv, file, newName);
+            _PSCOM(mv, file, newName);
         }
     }
 };
 
 void PscomEngine::renameFiles(QString schema) const {
     for (auto file : _files) {
-        const auto date = PSCOM(et, file);
-        const auto newName = PSCOM(fn, file, date, schema);
+        const auto date = _PSCOM(et, file);
+        const auto newName = _PSCOM(fn, file, date, schema);
         if (file != newName) {
-            PSCOM(mv, file, newName);
+            _PSCOM(mv, file, newName);
         }
     }
 };
 
 void PscomEngine::groupFiles(QString schema) const {
     for (auto file : _files) {
-        const auto date = PSCOM(et, file);
-        const auto newName = PSCOM(fp, file, date.date(), schema);
+        const auto date = _PSCOM(et, file);
+        const auto newName = _PSCOM(fp, file, date.date(), schema);
         if (file == newName) {
             continue;
         }
         const auto dir = QFileInfo(newName).absolutePath();
-        if (!PSCOM(de, dir)) {
-            qDebug() << "mkdir" << dir;
-            PSCOM(mk, newName);
+        if (!_PSCOM(de, dir)) {
+            _PSCOM(mk, newName);
         }
-        qDebug() << "mv" << file << newName;
-        PSCOM(mv, file, newName);
+        _PSCOM(mv, file, newName);
     }
 };
 
@@ -204,17 +204,17 @@ void PscomEngine::resizeFiles(int width, int height) const {
     }
     if (width != -1 && height != -1) {
         for (auto file : _files) {
-            PSCOM(ss, file, width, height);
+            _PSCOM(ss, file, width, height);
         }
     } else if (width != -1) {
         assert(height == -1);
         for (auto file : _files) {
-            PSCOM(sw, file, width);
+            _PSCOM(sw, file, width);
         }
     } else if (height != -1) {
         assert(width == -1);
         for (auto file : _files) {
-            PSCOM(sh, file, height);
+            _PSCOM(sh, file, height);
         }
     } else {
         assert(false); // Should not reach here
@@ -230,23 +230,18 @@ void PscomEngine::convertFiles(QString format, int quality) const {
             // Workaround with double conversion to compensate inconvenient
             // pscom interface. See
             // https://moodle.hpi3d.de/mod/forum/discuss.php?d=2135#p4151.
-            const auto oldFormat = PSCOM(fs, file);
+            const auto oldFormat = _PSCOM(fs, file);
             const auto tmpFormat = oldFormat == "jpg" ? "png" : "jpg";
             assert(tmpFormat != oldFormat);
-            qDebug() << "cf" << file << tmpFormat << quality;
-            PSCOM(cf, file, tmpFormat, quality);
-            const auto tmpFile = PSCOM(cs, file, tmpFormat);
-            qDebug() << "rm" << file;
-            PSCOM(rm, file);
-            qDebug() << "cf" << tmpFile << oldFormat << quality;
-            PSCOM(cf, tmpFile, oldFormat, quality);
-            qDebug() << "rm" << tmpFile;
-            PSCOM(rm, tmpFile);
+            _PSCOM(cf, file, tmpFormat, quality);
+            const auto tmpFile = _PSCOM(cs, file, tmpFormat);
+            _PSCOM(rm, file);
+            _PSCOM(cf, tmpFile, oldFormat, quality);
+            _PSCOM(rm, tmpFile);
         }
     } else {
         for (auto file : _files) {
-            qDebug() << "cf" << file << format << quality;
-            PSCOM(cf, file, format, quality);
+            _PSCOM(cf, file, format, quality);
         }
     }
 }
