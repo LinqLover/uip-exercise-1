@@ -5,11 +5,11 @@
 #include <QTextStream>
 
 
-class PscomCli : public QCoreApplication
+class PscomApp : public QCoreApplication
 {
 public:
-    PscomCli(int &argc, char *argv[]);
-    ~PscomCli();
+    PscomApp(int &argc, char *argv[]);
+    ~PscomApp();
 
     QTextStream cout() const;
     QTextStream cerr() const;

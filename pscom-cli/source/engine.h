@@ -14,10 +14,10 @@
 
 class PscomEngine {
 private:
-    PscomCli *_app;
+    PscomApp *_app;
     QStringList _files;
 public:
-    PscomEngine(PscomCli &app);
+    PscomEngine(PscomApp &app);
 
     void pscom(QList<QString> arguments, int argOffset = 0) const;
     int showSupportedFormats() const;

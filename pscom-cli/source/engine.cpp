@@ -34,7 +34,7 @@
 }()
 
 
-PscomEngine::PscomEngine(PscomCli &app)
+PscomEngine::PscomEngine(PscomApp &app)
     : _app(&app)
 {
 }

@@ -33,11 +33,12 @@ int main(int argc, char *argv[])
     // Setting the application name is not required, since, if not set, it defaults to the executable name.
     // QCoreApplication::setApplicationName("pscom-cli");
     QCoreApplication::setApplicationVersion("1.0.0");
-    auto app = PscomCli(argc, argv); // TODO: Rename into PscomApp?
+    auto app = PscomApp(argc, argv);
 
     PscomCommandLineParser parser(app);
     parser.setApplicationDescription("Photo system command-line tool");
-    parser._showVersion = std::bind(&PscomEngine::showVersion, PscomEngine(app));
+    parser._showVersionCallback = std::bind(
+        &PscomEngine::showVersion, PscomEngine(app));
 
     QCommandLineOption optionSupportedFormats(
         QStringList{"supported-formats"},
@@ -221,19 +222,19 @@ int main(int argc, char *argv[])
 }
 
 
-PscomCli::PscomCli(int &argc, char *argv[]) :
+PscomApp::PscomApp(int &argc, char *argv[]) :
     QCoreApplication(argc, argv)
 {
 }
 
-PscomCli::~PscomCli()
+PscomApp::~PscomApp()
 {
 }
 
-QTextStream PscomCli::cout() const {
+QTextStream PscomApp::cout() const {
     return QTextStream(stdout);
 }
 
-QTextStream PscomCli::cerr() const {
+QTextStream PscomApp::cerr() const {
     return QTextStream(stderr);
 }

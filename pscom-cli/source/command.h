@@ -11,12 +11,12 @@ class PscomCommand;
 
 class PscomCommandLineParser : public QCommandLineParser {
 private:
-    PscomCli *_app;
+    PscomApp *_app;
     QList<PscomCommand> _commands;
     PscomCommand *_command = nullptr;
 public:
-    PscomCommandLineParser(PscomCli &app);
-    std::function<void(void)> _showVersion;
+    PscomCommandLineParser(PscomApp &app);
+    std::function<void(void)> _showVersionCallback;
 
     void addCommand(PscomCommand &command);
     PscomCommand addVersionCommand(void);

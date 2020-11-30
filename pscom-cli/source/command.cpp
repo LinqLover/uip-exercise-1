@@ -7,12 +7,14 @@
 #include "main.h"
 
 
-PscomCommandLineParser::PscomCommandLineParser(PscomCli &app) :
+PscomCommandLineParser::PscomCommandLineParser(PscomApp &app) :
     QCommandLineParser::QCommandLineParser(),
     _app(&app),
     _commands(QList<PscomCommand>())
 {
-    _showVersion = [this](){ this->QCommandLineParser::showVersion(); };
+    _showVersionCallback = [this](){
+        this->QCommandLineParser::showVersion();
+    };
 
     addPositionalArgument("command", "The operation to perform.");
     addOption(QCommandLineOption(
@@ -171,7 +173,7 @@ void PscomCommandLineParser::showHelp(int exitCode) const {
 }
 
 void PscomCommandLineParser::showVersion() const {
-    _showVersion();
+    _showVersionCallback();
     //qt_call_post_routines(); // Not available
     ::exit(EXIT_SUCCESS);
 }
