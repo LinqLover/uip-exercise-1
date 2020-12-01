@@ -22,6 +22,8 @@
  * - prefer qDebug, qInfo, qWarning, qCritical, and qFatal for verbosity and console output.
  */
 
+#define EXIT_MISUSE 2
+
 
 int main(int argc, char *argv[])
 {
@@ -226,7 +228,7 @@ int main(int argc, char *argv[])
     }
 
     if (!parser.hasCommand()) {
-        parser.showHelp(EXIT_FAILURE);
+        parser.showHelp(EXIT_MISUSE);
     }
 
     if (parser.positionalArguments().first() == "pscom") {
