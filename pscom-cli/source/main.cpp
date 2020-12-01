@@ -9,9 +9,6 @@
 #include <QRegExp>
 #include <QTextStream>
 
-#include <QDir>
-#include <QFileInfo>
-
 #include "command.h"
 #include "engine.h"
 #include "verbosity.h"
