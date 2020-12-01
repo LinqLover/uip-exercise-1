@@ -66,27 +66,27 @@ void VerbosityHandler(
 
     // TODO: Use color
     switch (type) {
-    case QtDebugMsg:
-        if (verbosityLevel < VerbosityLevel::Debug) {
-            return;
-        }
-        break;
-    case QtInfoMsg:
-        if (verbosityLevel < VerbosityLevel::Info) {
-            return;
-        }
-        break;
-    case QtWarningMsg:
-        if (verbosityLevel < VerbosityLevel::Warning) {
-            return;
-        }
-        break;
-    case QtCriticalMsg:
-    case QtFatalMsg:
-        if (verbosityLevel < VerbosityLevel::Error) {
-            return;
-        }
-        break;
+        case QtDebugMsg:
+            if (verbosityLevel < VerbosityLevel::Debug) {
+                return;
+            }
+            break;
+        case QtInfoMsg:
+            if (verbosityLevel < VerbosityLevel::Info) {
+                return;
+            }
+            break;
+        case QtWarningMsg:
+            if (verbosityLevel < VerbosityLevel::Warning) {
+                return;
+            }
+            break;
+        case QtCriticalMsg:
+        case QtFatalMsg:
+            if (verbosityLevel < VerbosityLevel::Error) {
+                return;
+            }
+            break;
     }
 
     stream << qFormatLogMessage(type, context, message) << Qt::endl;

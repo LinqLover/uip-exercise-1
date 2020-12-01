@@ -111,7 +111,7 @@ void PscomEngine::listFiles() const {
     }
 };
 
-void PscomEngine::copyFiles(const QString & target) const {
+void PscomEngine::copyFiles(const QString & target) {
     _core->assertDirectory(target);
     const auto dir = QDir(target); // WORKAROUND: we should not use QFileInfo etc.
     for (auto file : _files) {
@@ -120,7 +120,7 @@ void PscomEngine::copyFiles(const QString & target) const {
     }
 };
 
-void PscomEngine::moveFiles(const QString & target) const {
+void PscomEngine::moveFiles(const QString & target) {
     _core->assertDirectory(target);
     const auto dir = QDir(target); // WORKAROUND: we should not use QFileInfo etc.
     for (auto file : _files) {
@@ -129,7 +129,7 @@ void PscomEngine::moveFiles(const QString & target) const {
     }
 };
 
-void PscomEngine::renameFiles(const QString & schema) const {
+void PscomEngine::renameFiles(const QString & schema) {
     for (auto file : _files) {
         const auto date = _core->getDate(file);
         const auto newPath = _core->makeFilePath(file, date, schema);
@@ -137,7 +137,7 @@ void PscomEngine::renameFiles(const QString & schema) const {
     }
 };
 
-void PscomEngine::groupFiles(const QString & schema) const {
+void PscomEngine::groupFiles(const QString & schema) {
     for (auto file : _files) {
         const auto date = _core->getDate(file);
         const auto newPath = _core->makeDirectoryPath(file, date.date(), schema);
@@ -172,11 +172,11 @@ void PscomEngine::resizeFiles(int width, int height) const {
             _core->scaleImageIntoHeight(file, height);
         }
     } else {
-        assert(false); // Should not reach here
+        UNREACHABLE;
     }
 }
 
-void PscomEngine::convertFiles(QString format, int quality) const {
+void PscomEngine::convertFiles(QString format, int quality) {
     if (format == nullptr && quality == -1) {
         qFatal("No conversion options specified");
     }
@@ -186,35 +186,81 @@ void PscomEngine::convertFiles(QString format, int quality) const {
     }
     for (auto file : _files) {
         const auto newPath = _core->makeSuffix(file, format);
-        if (_core->exists(newPath)) {
-            const auto utf8 = newPath.toUtf8();
-            qFatal("File already exists: \"%s\"", utf8.constData()); // TODO: Add interactivity
-            // TODO: If confirmed, delete old file ...
-        }
+        if (!denyExists(newPath)) { continue; }
         _core->convertImage(file, format, quality);
     }
 }
 
-void PscomEngine::copyFile(
-    const QString & oldPath, const QString & newPath
-) const {
+void PscomEngine::copyFile(const QString & oldPath, const QString & newPath) {
     if (oldPath == newPath) { return; }
-    if (_core->exists(newPath)) {
-        const auto utf8 = newPath.toUtf8();
-        qFatal("File already exists: \"%s\"", utf8.constData()); // TODO: Add interactivity
-        // TODO: If confirmed, delete old file ...
-    }
+    if (!denyExists(newPath)) { return; }
     _core->copyFile(oldPath, newPath);
 }
 
-void PscomEngine::moveFile(
-    const QString & oldPath, const QString & newPath
-) const {
+void PscomEngine::moveFile(const QString & oldPath, const QString & newPath) {
     if (oldPath == newPath) { return; }
-    if (_core->exists(newPath)) {
-        const auto utf8 = newPath.toUtf8();
-        qFatal("File already exists: \"%s\"", utf8.constData()); // TODO: Add interactivity
-        // TODO: If confirmed, delete old file ...
-    }
+    if (!denyExists(newPath)) { return; }
     _core->moveFile(oldPath, newPath);
+}
+
+bool PscomEngine::denyExists(const QString & path) {
+    if (!_core->exists(path)) { return true; }
+
+    switch (getFileExistsReaction(path)) {
+        case FileExistsReaction::Skip:
+            return false;
+        case FileExistsReaction::Overwrite:
+            _core->removeFile(path);
+            return true;
+        case FileExistsReaction::Backup:
+            {
+                const auto backupPath = path + "~";
+                if (!denyExists(backupPath)) {
+                    return false;
+                }
+                _core->moveFile(path, backupPath);
+                return true;
+            }
+        default:
+            UNREACHABLE;
+    }
+}
+
+FileExistsReaction PscomEngine::getFileExistsReaction(
+    const QString & path
+) {
+    if (fileExistsReaction.has_value()) {
+        return fileExistsReaction.value();
+    }
+
+    const auto message = QString("File already exists: \"%1\"").arg(path);
+    if (!_app->isInteractive()) {
+        const auto utf8 = message.toUtf8();
+        qFatal("%s", utf8.constData());
+    };
+    switch (_app->interactiveRequest(message, {
+        {'o', "overwrite"},
+        {'O', "overwrite all"},
+        {'s', "skip"},
+        {'S', "skip all"},
+        {'b', "backup"},
+        {'B', "backup all"}
+    })) {
+        case 2:
+            fileExistsReaction = FileExistsReaction::Overwrite;
+            [[fallthrough]];
+        case 1:
+            return FileExistsReaction::Overwrite;
+        case 4:
+            fileExistsReaction = FileExistsReaction::Skip;
+            [[fallthrough]];
+        case 3:
+            return FileExistsReaction::Skip;
+        case 6:
+            fileExistsReaction = FileExistsReaction::Backup;
+            [[fallthrough]];
+        case 5:
+            return FileExistsReaction::Backup;
+    }
+    UNREACHABLE;
 }

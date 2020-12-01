@@ -2,10 +2,18 @@
 
 #include <functional>
 #include <optional>
+#include <stdio.h>
+#ifdef Q_OS_WIN32
+    #include <io.h>
+#else
+    #include <unistd.h>
+#endif
 
 #include <QCoreApplication>
 #include <QCommandLineOption>
 #include <QDebug>
+#include <QList>
+#include <QPair>
 #include <QRegExp>
 #include <QTextStream>
 
@@ -284,4 +292,45 @@ QTextStream PscomApp::cerr() const {
 
 QTextStream PscomApp::cin() const {
     return QTextStream(stdin);
+}
+
+bool PscomApp::isInteractive() const {
+    #ifdef Q_OS_WIN32
+    return _isatty(_fileno(stdin));
+    #else
+    return isatty(fileno(stdin));
+    #endif
+}
+
+int PscomApp::interactiveRequest(
+    const QString & message,
+    const QList<QPair<QChar, QString>> & answers
+) const {
+    const auto instructionMessage = [answers](){
+        QString instructionMessage;
+        for (const auto answer : answers) {
+            instructionMessage += QString(
+                "[%1] %2  "
+            ).arg(answer.first).arg(answer.second);
+        }
+        return instructionMessage;
+    }();
+    auto
+        streamOut = cerr(),
+        streamIn = cin();
+    streamOut << message << Qt::endl;
+    while (true) {
+        streamOut << instructionMessage << Qt::endl;
+        const auto answer = streamIn.readLine();
+
+        if (answer.length() > 1) { continue; }
+        const auto key = answer[0];
+        int index = 0;
+        for (const auto answer : answers) {
+            index++;
+            if (answer.first == key) {
+                return index;
+            }
+        }
+    }
 }
