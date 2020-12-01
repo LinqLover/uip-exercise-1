@@ -7,7 +7,7 @@
 #include "main.h"
 
 
-PscomCommandLineParser::PscomCommandLineParser(PscomApp &app) :
+PscomCommandLineParser::PscomCommandLineParser(PscomApp & app) :
     QCommandLineParser::QCommandLineParser(),
     _app(&app),
     _commands(QList<PscomCommand>())
@@ -19,7 +19,7 @@ PscomCommandLineParser::PscomCommandLineParser(PscomApp &app) :
     addPositionalArgument("command", "The operation to perform.");
 }
 
-void PscomCommandLineParser::addCommand(PscomCommand &command) {
+void PscomCommandLineParser::addCommand(PscomCommand & command) {
     _commands.append(command);
 }
 
@@ -58,7 +58,7 @@ int PscomCommandLineParser::countSet(
     return count;
 }
 
-void PscomCommandLineParser::process(const QStringList &arguments)
+void PscomCommandLineParser::process(const QStringList & arguments)
 {
     if (!parse(arguments)) {
         const auto utf8 = errorText().toUtf8();
@@ -100,12 +100,20 @@ void PscomCommandLineParser::process()
     process(QCoreApplication::arguments());
 }
 
+bool PscomCommandLineParser::commandRequiresEngine() const {
+    return _command->requiresEngine();
+}
+
 bool PscomCommandLineParser::hasCommand() const {
     return _command;
 }
 
-void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
-    QStringList posArgs = positionalArguments(), arguments;
+void PscomCommandLineParser::runCommand(PscomEngine & engine) const {
+    _command->execute(engine, _commandArguments);
+}
+
+void PscomCommandLineParser::parseCommand() {
+    QStringList posArgs = positionalArguments();
 
     {
         const auto numPosArgs = posArgs.length() - 1;
@@ -122,9 +130,9 @@ void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
             defaultEnd = _command->defaultValues.constEnd();
         for (auto param : cmdParams) {
             if (i++ < numPosArgs) {
-                arguments.append(posArgs[i]);
+                _commandArguments.append(posArgs[i]);
             } elif (defaultIt != defaultEnd && *(defaultIt++) != nullptr) {
-                arguments.append(*(defaultIt - 1));
+                _commandArguments.append(*(defaultIt - 1));
             } else {
                 missingParameters.append(param);
             }
@@ -137,8 +145,6 @@ void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
                 utf8.constData());
         }
     }
-
-    _command->execute(engine, arguments);
 }
 
 QString PscomCommandLineParser::helpText() const {
@@ -187,10 +193,10 @@ void PscomCommandLineParser::showVersion() const {
 }
 
 PscomCommand::PscomCommand(
-    const QStringList &names,
-    const QStringList &parameters,
-    const QString &description,
-    const QStringList &defaultValues
+    const QStringList & names,
+    const QStringList & parameters,
+    const QString & description,
+    const QStringList & defaultValues
 ) :
     names(QStringList(names)),
     parameters(QStringList(parameters)),
@@ -201,11 +207,11 @@ PscomCommand::PscomCommand(
 }
 
 PscomCommand::PscomCommand(
-    const QStringList &names,
-    const QStringList &parameters,
-    const QString &description,
+    const QStringList & names,
+    const QStringList & parameters,
+    const QString & description,
     const std::function<void(void)> function,
-    const QStringList &defaultValues
+    const QStringList & defaultValues
 ) : PscomCommand(names, parameters, description, defaultValues)
 {
     _function_numArgs = 0;
@@ -213,11 +219,11 @@ PscomCommand::PscomCommand(
 }
 
 PscomCommand::PscomCommand(
-    const QStringList &names,
-    const QStringList &parameters,
-    const QString &description,
+    const QStringList & names,
+    const QStringList & parameters,
+    const QString & description,
     const std::function<void(PscomEngine &)> function,
-    const QStringList &defaultValues
+    const QStringList & defaultValues
 ) : PscomCommand(names, parameters, description, defaultValues)
 {
     _function_numArgs = 1;
@@ -225,11 +231,11 @@ PscomCommand::PscomCommand(
 }
 
 PscomCommand::PscomCommand(
-    const QStringList &names,
-    const QStringList &parameters,
-    const QString &description,
+    const QStringList & names,
+    const QStringList & parameters,
+    const QString & description,
     const std::function<void(PscomEngine &, QString)> function,
-    const QStringList &defaultValues
+    const QStringList & defaultValues
 ) : PscomCommand(names, parameters, description, defaultValues)
 {
     _function_numArgs = 2;
@@ -237,8 +243,8 @@ PscomCommand::PscomCommand(
 }
 
 void PscomCommand::execute(
-    PscomEngine &engine,
-    QStringList &arguments
+    PscomEngine & engine,
+    const QStringList & arguments
 ) const {
     assert(!_function_numArgs
         ? !arguments.length()
@@ -257,4 +263,8 @@ void PscomCommand::execute(
             assert(false); // Unsupported numArgs!
             std::terminate();
     }
+}
+
+bool PscomCommand::requiresEngine(void) const {
+    return _function_numArgs;
 }

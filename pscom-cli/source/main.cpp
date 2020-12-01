@@ -234,25 +234,28 @@ int main(int argc, char *argv[])
         return EXIT_SUCCESS;
     }
 
-    // TODO: Get command to run HERE, then apply filters (avoid unnecessary work before identifying a missing argument)
+    parser.parseCommand();
 
-    const auto directory = parser.isSet(optionDirectory)
-        ? parser.value(optionDirectory)
-        : ".";
-    const auto recursive = parser.isSet(optionRecursive);
-    const auto dateMin = parser.isSet(optionMinDate)
-        ? std::make_optional(QDateTime::fromString(
-            parser.value(optionMinDate), Qt::ISODateWithMs))
-        : std::nullopt;
-    const auto dateMax = parser.isSet(optionMaxDate)
-        ? std::make_optional(QDateTime::fromString(
-            parser.value(optionMaxDate), Qt::ISODateWithMs))
-        : std::nullopt;
-    const auto regex = parser.isSet(optionRegex)
-        ? std::make_optional(QRegExp(".*" + parser.value(optionRegex) + ".*"))
-        : std::nullopt;
+    if (parser.commandRequiresEngine()) {
+        const auto directory = parser.isSet(optionDirectory)
+            ? parser.value(optionDirectory)
+            : ".";
+        const auto recursive = parser.isSet(optionRecursive);
+        const auto dateMin = parser.isSet(optionMinDate)
+            ? std::make_optional(QDateTime::fromString(
+                parser.value(optionMinDate), Qt::ISODateWithMs))
+            : std::nullopt;
+        const auto dateMax = parser.isSet(optionMaxDate)
+            ? std::make_optional(QDateTime::fromString(
+                parser.value(optionMaxDate), Qt::ISODateWithMs))
+            : std::nullopt;
+        const auto regex = parser.isSet(optionRegex)
+            ? std::make_optional(QRegExp(
+                ".*" + parser.value(optionRegex) + ".*"))
+            : std::nullopt;
 
-    engine.findFiles(directory, recursive, dateMin, dateMax, regex);
+        engine.findFiles(directory, recursive, dateMin, dateMax, regex);
+    }
 
     parser.runCommand(engine);
 
