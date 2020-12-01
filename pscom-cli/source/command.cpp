@@ -56,7 +56,8 @@ PscomCommand PscomCommandLineParser::addHelpCommand(void) {
 void PscomCommandLineParser::process(const QStringList &arguments)
 {
     if (!parse(arguments)) {
-        qFatal("%s", errorText().toUtf8().constData());
+        const auto utf8 = errorText().toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     if (isSet(QStringLiteral("version"))) {
@@ -82,7 +83,8 @@ void PscomCommandLineParser::process(const QStringList &arguments)
             }
         }
         if (!command) {
-            qFatal("Unknown command: %s", cmdName.toUtf8().constData());
+            const auto utf8 = cmdName.toUtf8();
+            qFatal("Unknown command: %s", utf8.constData());
         }
         _command = command;
     }
@@ -123,10 +125,11 @@ void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
             }
         }
         if (!missingParameters.isEmpty()) {
+            const auto utf8 = missingParameters.join(", ").toUtf8();
             qFatal((missingParameters.size() == 1
                     ? "Missing argument: %s"
                     : "Missing arguments: %s"),
-                missingParameters.join(", ").toUtf8().constData());
+                utf8.constData());
         }
     }
 
