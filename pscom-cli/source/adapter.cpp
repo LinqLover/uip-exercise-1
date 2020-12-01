@@ -336,3 +336,145 @@ void PscomAdapter::denyExists(const QString & path) const {
     const auto utf8 = path.toUtf8();
     qFatal("File already exists: \"%s\"", utf8.constData());
 }
+
+PscomSimulator::PscomSimulator(
+    IPscomCore & core, const std::function<QTextStream(void)> stream)
+    : _core(&core), _stream(stream)
+{
+}
+
+void PscomSimulator::log(const QString & message) const {
+    const auto utf8 = message.toUtf8();
+    _stream() << utf8.constData() << Qt::endl;
+}
+
+const QString PscomSimulator::version(void) const {
+    return _core->version();
+}
+
+const QStringList PscomSimulator::supportedFormats(void) const {
+    return _core->supportedFormats();
+}
+
+void PscomSimulator::assertDirectory(const QString & path) const {
+    _core->assertDirectory(path);
+}
+
+void PscomSimulator::assertFormat(const QString & format) const {
+    _core->assertFormat(format);
+}
+
+void PscomSimulator::copyFile(
+    const QString & source, const QString & destination
+) const {
+    log(QString("copy \"%1\" \"%2\"").arg(source).arg(destination));
+}
+
+void PscomSimulator::createDirectory(const QString & pathInDirectory) const {
+    log(QString("create directory for \"%1\"").arg(pathInDirectory));
+}
+
+bool PscomSimulator::exists(const QString & path) const {
+    return _core->exists(path);
+}
+
+bool PscomSimulator::existsDirectory(const QString & path) const {
+    return _core->existsDirectory(path);
+}
+
+bool PscomSimulator::existsFile(const QString & path) const {
+    return _core->existsFile(path);
+}
+
+const QStringList PscomSimulator::findFiles(
+    const QString & path,
+    const QDateTime & dateMin,
+    const QDateTime & dateMax,
+    bool recursive
+) const {
+    return _core->findFiles(path, dateMin, dateMax, recursive);
+}
+
+const QStringList PscomSimulator::findFiles(
+    const QString & path, const QRegExp & regex, bool recursive
+) const {
+    return _core->findFiles(path, regex, recursive);
+}
+
+const QDateTime PscomSimulator::getDate(const QString & path) const {
+    return _core->getDate(path);
+}
+
+const QString PscomSimulator::getSuffix(const QString & path) const {
+    return _core->getSuffix(path);
+}
+
+const QString PscomSimulator::makeDirectoryPath(
+    const QString & path,
+    const QDate & date,
+    const QString & format
+) const {
+    return _core->makeDirectoryPath(path, date, format);
+}
+
+const QString PscomSimulator::makeFilePath(
+    const QString & path,
+    const QDateTime & dateTime,
+    const QString & format
+) const {
+    return _core->makeFilePath(path, dateTime, format);
+}
+
+const QString PscomSimulator::makeSuffix(
+    const QString & path,
+    const QString & format
+) const {
+    return _core->makeSuffix(path, format);
+}
+
+void PscomSimulator::moveFile(
+    const QString & source, const QString & destination
+) const {
+    log(QString("move \"%1\" \"%2\"").arg(source).arg(destination));
+}
+
+bool PscomSimulator::supportsFile(const QString & path) const {
+    return _core->supportsFile(path);
+}
+
+void PscomSimulator::removeFile(const QString & path) const {
+    log(QString("remove \"%1\"").arg(path));
+}
+
+const QString PscomSimulator::convertImage(
+    const QString & path, const QString & suffix, int quality
+) const {
+    auto logString = QString("convert \"%1\"");
+    if (suffix != nullptr) {
+        logString += " to %2";
+    }
+    if (quality != -1) {
+        logString += " with quality=%3";
+    }
+    log(logString.arg(path).arg(suffix).arg(quality));
+
+    return makeSuffix(path, suffix);
+}
+
+void PscomSimulator::scaleImage(
+    const QString & path, int width, int height
+) const {
+    log(QString("scale \"%1\" to %2x%3").arg(path).arg(width).arg(height));
+}
+
+void PscomSimulator::scaleImageIntoWidth(
+    const QString & path, int width
+) const {
+    log(QString("scale \"%1\" to width=%2").arg(path).arg(width));
+}
+
+void PscomSimulator::scaleImageIntoHeight(
+    const QString & path, int height
+) const {
+    log(QString("scale \"%1\" to height=%2").arg(path).arg(height));
+}

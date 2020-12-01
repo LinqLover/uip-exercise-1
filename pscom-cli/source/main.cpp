@@ -70,6 +70,10 @@ int main(int argc, char *argv[])
         "specify the date, it will be treated as midnight time.",
         "date"
     );
+    QCommandLineOption optionDryRun(
+        QStringList{"dry-run"},
+        "todo."
+    );
     QCommandLineOption optionWidth(
         QStringList{"max-width"},
         "the width the images should be fit into",
@@ -98,6 +102,7 @@ int main(int argc, char *argv[])
     assert(parser.addOption(optionRegex));
     assert(parser.addOption(optionMinDate));
     assert(parser.addOption(optionMaxDate));
+    assert(parser.addOption(optionDryRun));
     assert(parser.addOption(optionWidth));
     assert(parser.addOption(optionHeight));
     assert(parser.addOption(optionFormat));
@@ -181,6 +186,10 @@ int main(int argc, char *argv[])
 
     parser.process();
 
+    if (parser.isSet(optionDryRun)) {
+        std::function<QTextStream(void)> x = std::bind(&PscomApp::cout, &app);
+        core = new PscomSimulator(*core, x);
+    }
     PscomEngine engine(app, *core);
 
     if (parser.isSet(optionSupportedFormats)) {
