@@ -68,6 +68,23 @@ int main(int argc, char *argv[])
         "Quiet mode. Specify up to 2 times to decrease the verbosity level "
         "of output messages. Opposite of verbose mode."
     );
+    QCommandLineOption optionOnConflict(
+        QStringList{"on-conflict"},
+        "Conflict resolution strategy to be applied when a destructive "
+        "operation is run. Can be one of the following:"
+        "\n  overwrite  Overwrite the original file irrecoveably."
+        "\n  skip       Just forget the incident and continue with the next "
+            "file."
+        "\n  backup     Create a backup of the original file (by appending a "
+            "squiggle to its file name) and then overwrite it.",
+        "action"
+    );
+    QCommandLineOption optionForce(
+        QStringList{"f", "force"},
+        QString("Enforce possibly destructive operations regardless of the "
+                "consequences. Equivalent to %1=%2."
+        ).arg(optionOnConflict.names().last()).arg("overwrite")
+    );
     QCommandLineOption optionSupportedFormats(
         QStringList{"supported-formats"},
         "Display all supported image formats."
@@ -127,6 +144,7 @@ int main(int argc, char *argv[])
         "value"
     );
     parser.addOptions({optionVerbose, optionQuiet});
+    parser.addOptions({optionOnConflict, optionForce});
     assert(parser.addOption(optionSupportedFormats));
     assert(parser.addOption(optionDirectory));
     assert(parser.addOption(optionRecursive));
@@ -217,6 +235,15 @@ int main(int argc, char *argv[])
 
     parser.process();
 
+    if (parser.isSet(optionOnConflict) && parser.isSet(optionForce)) {
+        const auto
+            utf8_1 = optionOnConflict.names().last().toUtf8(),
+            utf8_2 = optionForce.names().last().toUtf8();
+        qFatal(
+            "Cannot combine options %s and %s",
+            utf8_1.constData(), utf8_2.constData());
+    }
+
     if (parser.isSet(optionVerbose) || parser.isSet(optionQuiet)) {
         auto verbosityLevel = static_cast<int>(VerbosityLevel::Info);
         verbosityLevel += parser.countSet(optionVerbose);
@@ -229,6 +256,25 @@ int main(int argc, char *argv[])
         core = new PscomSimulator(*core, x);
     }
     PscomEngine engine(app, *core);
+    if (parser.isSet(optionForce)) {
+        engine.fileExistsReaction = FileExistsReaction::Overwrite;
+    } elif (parser.isSet(optionOnConflict)) {
+        const auto conflictStrategy = parser.value(optionOnConflict);
+        if (conflictStrategy == "overwrite") {
+            engine.fileExistsReaction = FileExistsReaction::Overwrite;
+        } elif (conflictStrategy == "skip") {
+            engine.fileExistsReaction = FileExistsReaction::Skip;
+        } elif (conflictStrategy == "backup") {
+            engine.fileExistsReaction = FileExistsReaction::Backup;
+        } else {
+            const auto
+                utf8_1 = optionOnConflict.names().last().toUtf8(),
+                utf8_2 = conflictStrategy.toUtf8();
+            qFatal(
+                "Unknown %s strategy: %s",
+                utf8_1.constData(), utf8_2.constData());
+        }
+    }
 
     if (parser.isSet(optionSupportedFormats)) {
         engine.showSupportedFormats();
