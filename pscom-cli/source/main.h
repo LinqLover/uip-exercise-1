@@ -13,4 +13,5 @@ public:
 
     QTextStream cout() const;
     QTextStream cerr() const;
+    QTextStream cin() const;
 };

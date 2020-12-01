@@ -31,11 +31,12 @@ int main(int argc, char *argv[])
     // QCoreApplication::setApplicationName("pscom-cli");
     QCoreApplication::setApplicationVersion("1.0.0");
     auto app = PscomApp(argc, argv);
+    IPscomCore *core = new PscomAdapter();
 
     PscomCommandLineParser parser(app);
     parser.setApplicationDescription("Photo system command-line tool");
     parser._showVersionCallback = std::bind(
-        &PscomEngine::showVersion, PscomEngine(app));
+        &PscomEngine::showVersion, PscomEngine(app, *core));
 
     QCommandLineOption optionSupportedFormats(
         QStringList{"supported-formats"},
@@ -180,10 +181,11 @@ int main(int argc, char *argv[])
 
     parser.process();
 
-    PscomEngine engine(app);
+    PscomEngine engine(app, *core);
 
     if (parser.isSet(optionSupportedFormats)) {
-        return engine.showSupportedFormats();
+        engine.showSupportedFormats();
+        return EXIT_SUCCESS;
     }
 
     if (!parser.hasCommand()) {
@@ -194,6 +196,8 @@ int main(int argc, char *argv[])
         engine.pscom(parser.positionalArguments(), 1);
         return EXIT_SUCCESS;
     }
+
+    // TODO: Get command to run HERE, then apply filters (avoid unnecessary work before identifying a missing argument)
 
     const auto directory = parser.isSet(optionDirectory)
         ? parser.value(optionDirectory)
@@ -234,4 +238,8 @@ QTextStream PscomApp::cout() const {
 
 QTextStream PscomApp::cerr() const {
     return QTextStream(stderr);
+}
+
+QTextStream PscomApp::cin() const {
+    return QTextStream(stdin);
 }
