@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
         "Move image files into the specified destination folder.",
         &PscomEngine::moveFiles);
     const auto escapeNote = QString(
-        "To escape format selectors in the schema, enclose constant parts "
+        "To escape format selectors in the schema, enclose literal parts "
         "into single quotes (%1, or %2 from the bash shell)."
     ).arg("'").arg("\"'\"");
     PscomCommand commandRename(
