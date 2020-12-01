@@ -17,14 +17,6 @@ PscomCommandLineParser::PscomCommandLineParser(PscomApp &app) :
     };
 
     addPositionalArgument("command", "The operation to perform.");
-    addOption(QCommandLineOption(
-        QStringList{"h", "help", "?"},
-        "Displays help on command-line options."
-    ));
-    addOption(QCommandLineOption(
-        QStringList{"v", "version"},
-        "Displays version information."
-    ));
 }
 
 void PscomCommandLineParser::addCommand(PscomCommand &command) {
@@ -51,6 +43,19 @@ PscomCommand PscomCommandLineParser::addHelpCommand(void) {
     command.isHiddenFromHelp = true;
     addCommand(command);
     return command;
+}
+
+int PscomCommandLineParser::countSet(
+    const QCommandLineOption & option
+) const {
+    const auto targetNames = option.names();
+    int count = 0;
+    for (const auto parsedName : optionNames()) {
+        if (targetNames.contains(parsedName, Qt::CaseInsensitive)) {
+            count++;
+        }
+    }
+    return count;
 }
 
 void PscomCommandLineParser::process(const QStringList &arguments)

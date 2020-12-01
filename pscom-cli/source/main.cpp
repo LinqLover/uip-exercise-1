@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
     // Setting the application name is not required, since, if not set, it defaults to the executable name.
     // QCoreApplication::setApplicationName("pscom-cli");
-    QCoreApplication::setApplicationVersion("1.0.0");
+    QCoreApplication::setApplicationVersion("2.0.0");
     auto app = PscomApp(argc, argv);
     IPscomCore *core = new PscomAdapter();
 
@@ -38,6 +38,26 @@ int main(int argc, char *argv[])
     parser._showVersionCallback = std::bind(
         &PscomEngine::showVersion, PscomEngine(app, *core));
 
+    parser.addOptions({
+        {
+            QStringList{"h", "help", "?"},
+            "Displays help on command-line options."
+        },
+        {
+            QStringList{"V", "version"},
+            "Displays version information."
+        }
+    });
+    QCommandLineOption optionVerbose(
+        QStringList{"v", "verbose"},
+        "Verbose mode. Specify up to 2 times to increase the verbosity level"
+        "of output messages. Opposite of quiet mode."
+    );
+    QCommandLineOption optionQuiet(
+        QStringList{"q", "quiet"},
+        "Quiet mode. Specify up to 2 times to decrease the verbosity level "
+        "of output messages. Opposite of verbose mode."
+    );
     QCommandLineOption optionSupportedFormats(
         QStringList{"supported-formats"},
         "Display all supported image formats."
@@ -96,6 +116,7 @@ int main(int argc, char *argv[])
         "and 100 (best quality).",
         "value"
     );
+    parser.addOptions({optionVerbose, optionQuiet});
     assert(parser.addOption(optionSupportedFormats));
     assert(parser.addOption(optionDirectory));
     assert(parser.addOption(optionRecursive));
@@ -185,6 +206,13 @@ int main(int argc, char *argv[])
     parser.addCommand(commandConvert);
 
     parser.process();
+
+    if (parser.isSet(optionVerbose) || parser.isSet(optionQuiet)) {
+        auto verbosityLevel = static_cast<int>(VerbosityLevel::Info);
+        verbosityLevel += parser.countSet(optionVerbose);
+        verbosityLevel -= parser.countSet(optionQuiet);
+        setVerbosityLevel(static_cast<VerbosityLevel>(verbosityLevel));
+    }
 
     if (parser.isSet(optionDryRun)) {
         std::function<QTextStream(void)> x = std::bind(&PscomApp::cout, &app);

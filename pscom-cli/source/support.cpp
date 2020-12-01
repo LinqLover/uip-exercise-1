@@ -1,5 +1,6 @@
 #include <QTextStream>
 
+
 // CREDITS: https://stackoverflow.com/a/25506213/13994294 (edited)
 QStringList intersection(const QList<QStringList> &vecs) {
     auto last_intersection = vecs[0];

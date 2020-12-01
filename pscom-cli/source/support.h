@@ -48,6 +48,6 @@ _61,_62,_63,N,...) N
 // END Insane pragma stuff
 
 
-QStringList intersection(const QList<QStringList> &vecs);
+QStringList intersection(const QList<QStringList> & vecs);
 
 QString variantToString(const QVariant variant);

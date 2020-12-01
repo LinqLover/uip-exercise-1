@@ -21,6 +21,7 @@ public:
     void addCommand(PscomCommand &command);
     PscomCommand addVersionCommand(void);
     PscomCommand addHelpCommand(void);
+    int countSet(const QCommandLineOption & option) const;
     void process(const QStringList &arguments);
     void process();
     bool hasCommand() const;
