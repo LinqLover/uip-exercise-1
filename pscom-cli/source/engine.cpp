@@ -57,7 +57,7 @@ void PscomEngine::findFiles(
 
     if (directory == "-") {
         if (bool(dateMin) || bool(dateMax) || bool(regex)) {
-            qFatal("Filter options and stdin cannot be combined");
+            qFatal("Filter options are not available for standard input");
         }
         allFiles = readFileList(_app->cin());
     } else {

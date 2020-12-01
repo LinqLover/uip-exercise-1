@@ -31,7 +31,7 @@ void PscomAdapter::pscom(
 ) const {
     auto argCounter = argOffset;
     if (argCounter >= arguments.length()) {
-        qFatal("usage: %s", "pscom <symbol> <argument>*");
+        qFatal("usage: %s <symbol> <argument>*", STRINGIFY(PSCOM));
     }
     const auto symbol = arguments[argCounter++];
 
@@ -86,7 +86,7 @@ void PscomAdapter::pscom(
         TYPE_QDATE(QDateTime), TYPE_BOOL)
     else {
         const auto utf8 = symbol.toUtf8();
-        qFatal("pscom: " "Unknown symbol: %s", utf8.constData());
+        qFatal("%s: Unknown symbol: %s", STRINGIFY(PSCOM), utf8.constData());
     }
 }//
 }
@@ -121,7 +121,7 @@ void PscomAdapter::createDirectory(const QString & pathInDirectory) const {
     if (_PSCOM(mk, pathInDirectory)) { return; }
 
     const auto utf8 = pathInDirectory.toUtf8();
-    qFatal( "Could not create directory: \"%s\"", utf8.constData());
+    qFatal("Could not create directory: \"%s\"", utf8.constData());
 }
 
 bool PscomAdapter::exists(const QString & path) const {
