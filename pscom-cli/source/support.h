@@ -3,6 +3,8 @@
 #include <QTextStream>
 
 
+#define elif else if
+
 // BEGIN Insane pragma stuff
 // CREDITS (edited):
 // https://groups.google.com/g/comp.std.c/c/d-6Mj5Lko_s/m/ZM7VM42uLFEJ

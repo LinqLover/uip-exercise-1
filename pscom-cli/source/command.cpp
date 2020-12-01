@@ -118,7 +118,7 @@ void PscomCommandLineParser::runCommand(PscomEngine &engine) const {
         for (auto param : cmdParams) {
             if (i++ < numPosArgs) {
                 arguments.append(posArgs[i]);
-            } else if (defaultIt != defaultEnd && *(defaultIt++) != nullptr) {
+            } elif (defaultIt != defaultEnd && *(defaultIt++) != nullptr) {
                 arguments.append(*(defaultIt - 1));
             } else {
                 missingParameters.append(param);

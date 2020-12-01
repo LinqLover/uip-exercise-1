@@ -161,12 +161,12 @@ void PscomEngine::resizeFiles(int width, int height) const {
         for (auto file : _files) {
             _core->scaleImage(file, width, height);
         }
-    } else if (width != -1) {
+    } elif (width != -1) {
         assert(height == -1);
         for (auto file : _files) {
             _core->scaleImageIntoWidth(file, width);
         }
-    } else if (height != -1) {
+    } elif (height != -1) {
         assert(width == -1);
         for (auto file : _files) {
             _core->scaleImageIntoHeight(file, height);
