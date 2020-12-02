@@ -72,10 +72,10 @@ int main(int argc, char *argv[])
         QStringList{"on-conflict"},
         "Conflict resolution strategy to be applied when a destructive "
         "operation is run. Can be one of the following:"
-        "\n  overwrite  Overwrite the original file irrecoveably."
-        "\n  skip       Just forget the incident and continue with the next "
+        "\n- overwrite: Overwrite the original file irrecoveably."
+        "\n- skip: Just forget the incident and continue with the next "
             "file."
-        "\n  backup     Create a backup of the original file (by appending a "
+        "\n- backup: Create a backup of the original file (by appending a "
             "squiggle to its file name) and then overwrite it.",
         "action"
     );
