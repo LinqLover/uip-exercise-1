@@ -59,10 +59,15 @@ void PscomEngine::findFiles(
         if (bool(dateMin) || bool(dateMax) || bool(regex)) {
             qFatal("Filter options are not available for standard input");
         }
+        qDebug() << "Reading file list from standard input ..." << Qt::endl;
         allFiles = readFileList(_app->cin());
     } else {
+        qDebug() << "Searching files according to filters ..." << Qt::endl;
         allFiles = searchFiles(directory, recursive, dateMin, dateMax, regex);
     }
+    qDebug().noquote()
+        << QString("Found %1 matching files").arg(allFiles.size())
+        << Qt::endl;
 
     const auto formats = _core->supportedFormats();
     for (const auto file : allFiles) {
@@ -100,9 +105,13 @@ const QStringList PscomEngine::searchFiles(
             regex.value(),
             recursive));
     }
-    return fileLists.isEmpty()
-        ? _core->findFiles(directory, QRegExp(".*"), recursive)
-        : intersection(fileLists);
+    if (fileLists.isEmpty()) {
+        return _core->findFiles(directory, QRegExp(".*"), recursive);
+    }
+    if (fileLists.size() > 1) {
+        qDebug("Intersecting files from %i sources", fileLists.size());
+    }
+    return intersection(fileLists);
 }
 
 void PscomEngine::listFiles() const {
