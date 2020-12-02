@@ -448,14 +448,20 @@ void PscomSimulator::removeFile(const QString & path) const {
 const QString PscomSimulator::convertImage(
     const QString & path, const QString & suffix, int quality
 ) const {
-    auto logString = QString("convert \"%1\"");
+    auto logFormat = QString("convert \"%1\"");
     if (suffix != nullptr) {
-        logString += " to %2";
+        logFormat += " to %2";
     }
     if (quality != -1) {
-        logString += " with quality=%3";
+        logFormat += " with quality=%3";
     }
-    log(logString.arg(path).arg(suffix).arg(quality));
+    auto logString = logFormat.arg(path).arg(suffix);
+    if (logFormat.contains("%3")) {
+        // Workaround to disable "Argument missing" warning from QString ...
+        // https://forum.qt.io/topic/62525/ignore-unused-args-in-qstring-arg
+        logString = logString.arg(quality);
+    }
+    log(logString);
 
     return makeSuffix(path, suffix);
 }
