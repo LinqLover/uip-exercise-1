@@ -52,6 +52,7 @@ public:
         const std::optional<QDateTime> & dateMin = std::nullopt,
         const std::optional<QDateTime> & dateMax = std::nullopt,
         const std::optional<QRegExp> & regex = std::nullopt);
+    void processFiles(std::function<void(const QString &)> function) const;
     const QStringList readFileList(QTextStream stream) const;
     const QStringList searchFiles(
         const QString & directory,

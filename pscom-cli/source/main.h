@@ -14,7 +14,9 @@ public:
     QTextStream cout() const;
     QTextStream cerr() const;
     QTextStream cin() const;
-    bool isInteractive() const;
+    bool isCerrInteractive() const;
+    bool isCinInteractive() const;
+    bool isCoutInteractive() const;
     int interactiveRequest(
         const QString & message,
         const QList<QPair<QChar, QString>> & answers) const;

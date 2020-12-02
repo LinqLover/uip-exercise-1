@@ -340,11 +340,27 @@ QTextStream PscomApp::cin() const {
     return QTextStream(stdin);
 }
 
-bool PscomApp::isInteractive() const {
+bool PscomApp::isCinInteractive() const {
     #ifdef Q_OS_WIN32
     return _isatty(_fileno(stdin));
     #else
     return isatty(fileno(stdin));
+    #endif
+}
+
+bool PscomApp::isCerrInteractive() const {
+    #ifdef Q_OS_WIN32
+    return _isatty(_fileno(stderr));
+    #else
+    return isatty(fileno(stderr));
+    #endif
+}
+
+bool PscomApp::isCoutInteractive() const {
+    #ifdef Q_OS_WIN32
+    return _isatty(_fileno(stdout));
+    #else
+    return isatty(fileno(stdout));
     #endif
 }
 

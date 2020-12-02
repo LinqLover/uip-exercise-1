@@ -1,6 +1,6 @@
 #include "engine.h"
 
-
+#include <cmath>
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
@@ -12,6 +12,7 @@
 
 #include "main.h"
 #include "support.h"
+#include "verbosity.h"
 
 
 #define QDATETIME_MIN QDateTime()
@@ -114,6 +115,53 @@ const QStringList PscomEngine::searchFiles(
     return intersection(fileLists);
 }
 
+void PscomEngine::processFiles(
+    std::function<void(const QString &)> function
+) const {
+    const auto n = _files.size();
+
+    if (getVerbosityLevel() < VerbosityLevel::Info) {
+        for (const auto file : _files) {
+            function(file);
+        }
+        return;
+    }
+
+    int i = 0;
+    if (_app->isCerrInteractive()) {
+        const auto shades = QString("░▒▓"); /* Inspired by
+https://github.com/James-Yu/LaTeX-Workshop/blob/
+c03ef00241944c4c481f22a5e28d440b61b2fb66/src/components/buildinfo.ts#L226 */
+        auto stream = _app->cerr();
+        const auto maxWidth = 20;
+        for (const auto file : _files) {
+            const auto width = static_cast<double>(++i) / n;
+            auto bar = shades.right(1).repeated(floor(width * maxWidth));
+            const auto rem = fmod(width, 1);
+            if (rem) {
+                bar += shades.at(floor(rem * shades.size()));
+            }
+            bar += shades.left(1).repeated(
+                maxWidth - floor(width * maxWidth) - 1);
+            stream << QString(
+                "[%1] (%2/%3)\r"
+            ).arg(bar).arg(i).arg(n);
+            stream.flush();
+            function(file);
+        }
+        stream << '\n';
+    } else {
+        for (const auto file : _files) {
+            const auto utf8 = QString(
+                    "Processing \"%1\" ... (%2/%3)"
+                ).arg(file).arg(++i).arg(n)
+                .toUtf8();
+            qInfo("%s", utf8.constData());
+            function(file);
+        }
+    }
+}
+
 void PscomEngine::listFiles() const {
     for (auto file : _files) {
         _app->cout() << file << Qt::endl;
@@ -123,34 +171,34 @@ void PscomEngine::listFiles() const {
 void PscomEngine::copyFiles(const QString & target) {
     _core->assertDirectory(target);
     const auto dir = QDir(target); // WORKAROUND: we should not use QFileInfo etc.
-    for (auto file : _files) {
+    processFiles([&](const QString & file){
         const auto newPath = dir.filePath(QFileInfo(file).fileName());
         copyFile(file, newPath);
-    }
+    });
 };
 
 void PscomEngine::moveFiles(const QString & target) {
     _core->assertDirectory(target);
     const auto dir = QDir(target); // WORKAROUND: we should not use QFileInfo etc.
-    for (auto file : _files) {
+    processFiles([&](const QString & file){
         const auto newPath = dir.filePath(QFileInfo(file).fileName());
         moveFile(file, newPath);
-    }
+    });
 };
 
 void PscomEngine::renameFiles(const QString & schema) {
-    for (auto file : _files) {
+    processFiles([&](const QString & file){
         const auto date = _core->getDate(file);
         const auto newPath = _core->makeFilePath(file, date, schema);
         moveFile(file, newPath);
-    }
+    });
 };
 
 void PscomEngine::groupFiles(const QString & schema) {
-    for (auto file : _files) {
+    processFiles([&](const QString & file){
         const auto date = _core->getDate(file);
         const auto newPath = _core->makeDirectoryPath(file, date.date(), schema);
-        if (file == newPath) { continue; }
+        if (file == newPath) { return; }
 
         const auto dir = QFileInfo(newPath).absolutePath();
         if (!_core->existsDirectory(dir)) { // WORKAROUND: we should not use QFileInfo etc.
@@ -158,7 +206,7 @@ void PscomEngine::groupFiles(const QString & schema) {
             _core->createDirectory(newPath);
         }
         moveFile(file, newPath);
-    }
+    });
 };
 
 void PscomEngine::resizeFiles(int width, int height) const {
@@ -166,23 +214,24 @@ void PscomEngine::resizeFiles(int width, int height) const {
         qFatal("Either width or height must be specified");
     }
 
+    std::function<void(const QString &)> function;
     if (width != -1 && height != -1) {
-        for (auto file : _files) {
+        function = [&](const QString & file){
             _core->scaleImage(file, width, height);
-        }
+        };
     } elif (width != -1) {
         assert(height == -1);
-        for (auto file : _files) {
+        function = [&](const QString & file){
             _core->scaleImageIntoWidth(file, width);
-        }
+        };
     } elif (height != -1) {
-        assert(width == -1);
-        for (auto file : _files) {
+        function = [&](const QString & file){
             _core->scaleImageIntoHeight(file, height);
-        }
+        };
     } else {
         UNREACHABLE;
     }
+    processFiles(function);
 }
 
 void PscomEngine::convertFiles(QString format, int quality) {
@@ -193,11 +242,11 @@ void PscomEngine::convertFiles(QString format, int quality) {
     if (format != nullptr) {
         _core->assertFormat(format);
     }
-    for (auto file : _files) {
+    processFiles([&](const QString & file){
         const auto newPath = _core->makeSuffix(file, format);
-        if (!denyExists(newPath)) { continue; }
+        if (!denyExists(newPath)) { return; }
         _core->convertImage(file, format, quality);
-    }
+    });
 }
 
 void PscomEngine::copyFile(const QString & oldPath, const QString & newPath) {
@@ -243,7 +292,7 @@ FileExistsReaction PscomEngine::getFileExistsReaction(
     }
 
     const auto message = QString("File already exists: \"%1\"").arg(path);
-    if (!_app->isInteractive()) {
+    if (!_app->isCinInteractive()) {
         const auto utf8 = message.toUtf8();
         qFatal("%s", utf8.constData());
     };
