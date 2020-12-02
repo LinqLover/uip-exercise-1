@@ -1,7 +1,6 @@
 #include "command.h"
 
 #include <QDebug>
-#include <QTextStream>
 
 #include "engine.h"
 #include "main.h"

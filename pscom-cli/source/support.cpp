@@ -1,4 +1,4 @@
-#include <QTextStream>
+#include "support.h"
 
 
 // CREDITS: https://stackoverflow.com/a/25506213/13994294 (edited)
