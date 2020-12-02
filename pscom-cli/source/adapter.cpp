@@ -344,8 +344,7 @@ PscomSimulator::PscomSimulator(
 }
 
 void PscomSimulator::log(const QString & message) const {
-    const auto utf8 = message.toUtf8();
-    _stream() << utf8.constData() << Qt::endl;
+    _stream() << message << Qt::endl;
 }
 
 const QString PscomSimulator::version(void) const {
