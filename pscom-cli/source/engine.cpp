@@ -267,10 +267,18 @@ void PscomEngine::convertFiles(QString format, int quality) {
     if (quality != -1 && (quality < 0 || quality > 100)) {
         qFatal("Quality out of range: %i", quality);
     }
+
     processFiles([&](const QString & file){
-        const auto newPath = _core->makeSuffix(file, format);
-        if (!denyExists(newPath)) { return; }
-        _core->convertImage(file, format, quality);
+        const auto
+            newFormat = format != nullptr
+                ? format
+                : _core->getSuffix(file) /* always ask before overwriting */,
+            newPath = _core->makeSuffix(file, newFormat);
+        if (!(format != nullptr
+            ? denyExists(newPath)
+            : confirmOverwrite(newPath))
+        ) { return; }
+        _core->convertImage(file, newFormat, quality);
     });
 }
 
@@ -286,10 +294,37 @@ void PscomEngine::moveFile(const QString & oldPath, const QString & newPath) {
     _core->moveFile(oldPath, newPath);
 }
 
+bool PscomEngine::confirmOverwrite(const QString & path) {
+    if (!_core->exists(path)) {
+        const auto utf8 = path.toUtf8();
+        qFatal("File not found: %s", utf8.constData());
+    }
+
+    switch (getFileExistsReaction(
+        "This will override the file: \"%1\". Proceed?", path)
+    ) {
+        case FileExistsReaction::Skip:
+            return false;
+        case FileExistsReaction::Overwrite:
+            return true;
+        case FileExistsReaction::Backup:
+            {
+                const auto backupPath = path + "~";
+                if (!denyExists(backupPath)) {
+                    return false;
+                }
+                _core->copyFile(path, backupPath);
+                return true;
+            }
+        default:
+            UNREACHABLE;
+    }
+}
+
 bool PscomEngine::denyExists(const QString & path) {
     if (!_core->exists(path)) { return true; }
 
-    switch (getFileExistsReaction(path)) {
+    switch (getFileExistsReaction("File already exists: \"%1\"", path)) {
         case FileExistsReaction::Skip:
             return false;
         case FileExistsReaction::Overwrite:
@@ -310,18 +345,18 @@ bool PscomEngine::denyExists(const QString & path) {
 }
 
 FileExistsReaction PscomEngine::getFileExistsReaction(
-    const QString & path
+    const QString & message, const QString & path
 ) {
     if (fileExistsReaction.has_value()) {
         return fileExistsReaction.value();
     }
 
-    const auto message = QString("File already exists: \"%1\"").arg(path);
+    const auto messageText = message.arg(path);
     if (!_app->isCinInteractive()) {
-        const auto utf8 = message.toUtf8();
+        const auto utf8 = messageText.toUtf8();
         qFatal("%s", utf8.constData());
     };
-    switch (_app->interactiveRequest(message, {
+    switch (_app->interactiveRequest(messageText, {
         {'o', "overwrite"},
         {'O', "overwrite all"},
         {'s', "skip"},

@@ -28,8 +28,11 @@ private:
 
     void copyFile(const QString & oldPath, const QString & newPath);
     void moveFile(const QString & oldPath, const QString & newPath);
+    bool confirmOverwrite(const QString & path);
     bool denyExists(const QString & path);
-    FileExistsReaction getFileExistsReaction(const QString & path);
+    FileExistsReaction getFileExistsReaction(
+        const QString & message,
+        const QString & path);
     const QStringList searchFiles(
         const QString & directory,
         bool recursive,

@@ -232,12 +232,11 @@ const QString PscomAdapter::convertImage(
     const QString & suffix,
     int quality
 ) const {
-    // TODO: Handle same format separately!
-    if (suffix == nullptr) {
+    const auto oldSuffix = getSuffix(path);
+    if (!suffix.compare(oldSuffix, Qt::CaseInsensitive)) {
         // Workaround with double conversion to compensate inconvenient pscom
         // interface. See
         // https://moodle.hpi3d.de/mod/forum/discuss.php?d=2135#p4151.
-        const auto oldSuffix = getSuffix(path);
         const auto formats = supportedFormats();
         auto tmpSuffix = formats[0];
         if (oldSuffix == tmpSuffix) {
@@ -256,7 +255,7 @@ const QString PscomAdapter::convertImage(
     assertFile(path);
     assertFormat(suffix);
     const auto newPath = makeSuffix(path, suffix);
-    denyExists(newPath); // TODO: Allow to overwrite
+    denyExists(newPath);
     if (quality != -1 && (quality < 0 || quality > 100)) {
         qFatal("Quality out of range: %i", quality);
     }
@@ -463,22 +462,30 @@ void PscomSimulator::removeFile(const QString & path) const {
 const QString PscomSimulator::convertImage(
     const QString & path, const QString & suffix, int quality
 ) const {
-    auto logFormat = QString("convert \"%1\"");
-    if (suffix != nullptr) {
-        logFormat += " to %2";
+    const auto reformat = bool(suffix.compare(
+        _core->getSuffix(path), Qt::CaseInsensitive));
+    // Workaround to disable "Argument missing" warning from QString ...
+    // See https://forum.qt.io/topic/62525/ignore-unused-args-in-qstring-arg.
+    int argc = 0;
+    auto logFormat = QString("convert \"%%1\"").arg(++argc);
+    if (reformat) {
+        logFormat += QString(" to %%1").arg(++argc);
     }
     if (quality != -1) {
-        logFormat += " with quality=%3";
+        logFormat += QString(" to quality=%%1").arg(++argc);
     }
-    auto logString = logFormat.arg(path).arg(suffix);
-    if (logFormat.contains("%3")) {
-        // Workaround to disable "Argument missing" warning from QString ...
-        // https://forum.qt.io/topic/62525/ignore-unused-args-in-qstring-arg
+    auto logString = logFormat.arg(path);
+    if (reformat) {
+        logString = logString.arg(suffix);
+    }
+    if (quality != -1) {
         logString = logString.arg(quality);
     }
     log(logString);
 
-    return makeSuffix(path, suffix);
+    return reformat
+        ? path
+        : makeSuffix(path, suffix);
 }
 
 void PscomSimulator::scaleImage(
