@@ -225,7 +225,7 @@ void PscomEngine::groupFiles(const QString & schema) {
     });
 };
 
-void PscomEngine::resizeFiles(int width, int height) const {
+void PscomEngine::resizeFiles(int width, int height) {
     if (width == -1 && height == -1) {
         qFatal("Either width or height must be specified");
     }
@@ -253,7 +253,10 @@ void PscomEngine::resizeFiles(int width, int height) const {
     } else {
         UNREACHABLE;
     }
-    processFiles(function);
+    processFiles([&](const QString & file){
+        if (!confirmOverwrite(file)) { return; }
+        function(file);
+    });
 }
 
 void PscomEngine::convertFiles(QString format, int quality) {

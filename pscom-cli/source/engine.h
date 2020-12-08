@@ -52,7 +52,7 @@ public:
     void moveFiles(const QString & target);
     void renameFiles(const QString & schema);
     void groupFiles(const QString & schema);
-    void resizeFiles(int width = -1, int height = -1) const;
+    void resizeFiles(int width = -1, int height = -1);
     void convertFiles(QString format = nullptr, int quality = -1);
 
     void findFiles(
