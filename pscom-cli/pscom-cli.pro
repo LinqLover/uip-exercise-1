@@ -24,6 +24,12 @@ SOURCES += \
     source/support.cpp \
     source/verbosity.cpp
 
+RESOURCES += \
+    resources/translations.qrc
+
+TRANSLATIONS += \
+    resources/translations/pscom-cli_de.ts
+
 
 DESTDIR = $$PWD/bin
 CONFIG(debug, debug|release) {
@@ -46,4 +52,9 @@ INCLUDEPATH += $$PWD/../pscom/include
 DEPENDPATH += $$PWD/../pscom/include
 
 HEADERS += \
+    source/adapter.h
+    source/command.h
+    source/engine.h
+    source/main.h
+    source/support.h
     source/verbosity.h

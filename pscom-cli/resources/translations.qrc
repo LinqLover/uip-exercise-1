@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/translations" lang="de">
+        <file alias="pscom-cli.qm">translations/pscom-cli_de.qm</file>
+	</qresource>
+</RCC>

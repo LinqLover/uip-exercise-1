@@ -31,10 +31,13 @@ QString getMessagePattern() {
             "%{if-category}%{category}: %{endif}"
             "%{message}";
         if (verbosityLevel >= VerbosityLevel::Trace) {
-            pattern +=
-                "\nIn: %{file}:%{line} in function %{function}"
+            pattern += QObject::tr(
+                "\nIn: %1:%2 in function %3"
                 "\n  Backtrace:"
-                "\n    %{backtrace separator=\"\n    \"}";
+                "\n    %4"
+            ).arg(
+                "%{file}", "%{line}", "%{function}",
+                "%{backtrace separator=\"\n    \"}");
         }
         qSetMessagePattern(_messagePattern = pattern);
     }

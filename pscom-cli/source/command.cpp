@@ -15,7 +15,9 @@ PscomCommandLineParser::PscomCommandLineParser(PscomApp & app) :
         this->QCommandLineParser::showVersion();
     };
 
-    addPositionalArgument("command", "The operation to perform.");
+    addPositionalArgument(
+        "command",
+        QObject::tr("The operation to perform."));
 }
 
 void PscomCommandLineParser::addCommand(PscomCommand & command) {
@@ -26,7 +28,7 @@ PscomCommand PscomCommandLineParser::addVersionCommand(void) {
     auto command = PscomCommand(
         QStringList{"version"},
         QStringList{},
-        "Displays help on commandline options.",
+        QObject::tr("Displays help on command-line options."),
         [this](){showVersion();});
     command.isHiddenFromHelp = true;
     addCommand(command);
@@ -37,7 +39,7 @@ PscomCommand PscomCommandLineParser::addHelpCommand(void) {
     auto command = PscomCommand(
         QStringList{"help"},
         QStringList{},
-        "Displays version information.",
+        QObject::tr("Displays version information."),
         [this](){showHelp(EXIT_SUCCESS);});
     command.isHiddenFromHelp = true;
     addCommand(command);
@@ -87,8 +89,10 @@ void PscomCommandLineParser::process(const QStringList & arguments)
             }
         }
         if (!command) {
-            const auto utf8 = cmdName.toUtf8();
-            qFatal("Unknown command: %s", utf8.constData());
+            const auto utf8 = QObject::tr("Unknown command: %1")
+                .arg(cmdName)
+                .toUtf8();
+            qFatal("%s", utf8.constData());
         }
         _command = command;
     }
@@ -119,7 +123,8 @@ void PscomCommandLineParser::parseCommand() {
         const auto cmdParams = _command->parameters;
 
         if (numPosArgs > cmdParams.length()) {
-            qFatal("Too many arguments");
+            const auto utf8 = QObject::tr("Too many arguments").toUtf8();
+            qFatal("%s", utf8.constData());
         }
 
         int i = 0;
@@ -137,11 +142,13 @@ void PscomCommandLineParser::parseCommand() {
             }
         }
         if (!missingParameters.isEmpty()) {
-            const auto utf8 = missingParameters.join(", ").toUtf8();
-            qFatal((missingParameters.size() == 1
+            const auto utf8 = QObject::tr(
+                (missingParameters.size() == 1
                     ? "Missing argument: %s"
-                    : "Missing arguments: %s"),
-                utf8.constData());
+                    : "Missing arguments: %s")
+                ).arg(missingParameters.join(", "))
+                .toUtf8();
+            qFatal("%s", utf8.constData());
         }
     }
 }
@@ -155,7 +162,7 @@ QString PscomCommandLineParser::helpText() const {
 
     const auto nl = QLatin1Char('\n');
     text += nl;
-    text += QCommandLineParser::tr("Commands:") + nl;
+    text += QObject::tr("Commands:") + nl;
     const int maxWidth = 28;
     for (auto command : _commands) {
         if (command.isHiddenFromHelp)

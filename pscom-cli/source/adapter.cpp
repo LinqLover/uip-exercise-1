@@ -24,6 +24,7 @@
 }()
 
 
+// Developer interface not needoing translation
 void PscomAdapter::pscom(
     const QList<QString> & arguments,
     int argOffset,
@@ -85,8 +86,11 @@ void PscomAdapter::pscom(
     else HANDLE_SYMBOL(dt, QString, TYPE_QDATE(QDateTime),
         TYPE_QDATE(QDateTime), TYPE_BOOL)
     else {
-        const auto utf8 = symbol.toUtf8();
-        qFatal("%s: Unknown symbol: %s", STRINGIFY(PSCOM), utf8.constData());
+        const auto utf8 = QObject::tr("%1: Unknown symbol: %2")
+            .arg(STRINGIFY(PSCOM))
+            .arg(symbol)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 }//
 }
@@ -108,20 +112,21 @@ void PscomAdapter::copyFile(
 
     if (_PSCOM(cp, source, destination)) { return; }
 
-    const auto
-        utf8Source = source.toUtf8(),
-        utf8Destination = destination.toUtf8();
-    qFatal(
-        "Could not copy file: \"%s\" to: \"%s\"",
-        utf8Source.constData(), utf8Destination.constData());
+    const auto utf8 = QObject::tr("Could not copy file: \"%1\" to: \"%2\"")
+        .arg(source)
+        .arg(destination)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::createDirectory(const QString & pathInDirectory) const {
     denyExists(pathInDirectory);
     if (_PSCOM(mk, pathInDirectory)) { return; }
 
-    const auto utf8 = pathInDirectory.toUtf8();
-    qFatal("Could not create directory: \"%s\"", utf8.constData());
+    const auto utf8 = QObject::tr("Could not create directory: \"%1\"")
+        .arg(pathInDirectory)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 bool PscomAdapter::exists(const QString & path) const {
@@ -196,12 +201,11 @@ void PscomAdapter::moveFile(
 
     if (_PSCOM(mv, source, destination)) { return; }
 
-    const auto
-        utf8Source = source.toUtf8(),
-        utf8Destination = destination.toUtf8();
-    qFatal(
-        "Could not move file: \"%s\" to: \"%s\"",
-        utf8Source.constData(), utf8Destination.constData());
+    const auto utf8 = QObject::tr("Could not move file: \"%1\" to: \"%2\"")
+        .arg(source)
+        .arg(destination)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 bool PscomAdapter::supportsFile(const QString & path) const {
@@ -217,14 +221,18 @@ bool PscomAdapter::supportsFormat(const QString & format) const {
 void PscomAdapter::removeFile(const QString & path) const {
     if (!exists(path)) { return; }
     if (!(existsFile(path) || existsDirectory(path))) {
-        const auto utf8 = path.toUtf8();
-        qFatal("Cannot remove non-file path: %s", utf8.constData());
+        const auto utf8 = QObject::tr("Cannot remove non-file path: %1")
+            .arg(path)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     if (_PSCOM(rm, path)) { return; }
     
-    const auto utf8 = path.toUtf8();
-    qFatal("Could not remove file: %s", utf8.constData());
+    const auto utf8 = QObject::tr("Could not remove file: %1")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 const QString PscomAdapter::convertImage(
@@ -257,30 +265,43 @@ const QString PscomAdapter::convertImage(
     const auto newPath = makeSuffix(path, suffix);
     denyExists(newPath);
     if (quality != -1 && (quality < 0 || quality > 100)) {
-        qFatal("Quality out of range: %i", quality);
+        const auto utf8 = QObject::tr("Quality out of range: %1")
+            .arg(quality)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     if (_PSCOM(cf, path, suffix, quality)) { return newPath; }
 
-    const auto utf8 = path.toUtf8();
-    qFatal("Could not convert file: %s", utf8.constData());
-}        
+    const auto utf8 = QObject::tr("Could not convert file: %1")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
+}
 
 void PscomAdapter::scaleImage(
     const QString & path, int width, int height
 ) const {
     assertFileFormat(path);
     if (width <= 0) {
-        qFatal("Width out of range: %i", width);
+        const auto utf8 = QObject::tr("Width out of range: %1")
+            .arg(width)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
     if (height <= 0) {
-        qFatal("Height out of range: %i", height);
+        const auto utf8 = QObject::tr("Height out of range: %1")
+            .arg(height)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     if (_PSCOM(ss, path, width, height)) { return; }
 
-    const auto utf8 = path.toUtf8();
-    qFatal("Could not resize file: \"%s\"", utf8.constData());
+    const auto utf8 = QObject::tr("Could not resize file: %1")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::scaleImageIntoWidth(
@@ -288,13 +309,18 @@ void PscomAdapter::scaleImageIntoWidth(
 ) const {
     assertFileFormat(path);
     if (width <= 0) {
-        qFatal("Width out of range: %i", width);
+        const auto utf8 = QObject::tr("Width out of range: %1")
+            .arg(width)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     if (_PSCOM(sw, path, width)) { return; }
 
-    const auto utf8 = path.toUtf8();
-    qFatal("Could not resize file: \"%s\"", utf8.constData());
+    const auto utf8 = QObject::tr("Could not resize file: %1")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::scaleImageIntoHeight(
@@ -302,53 +328,74 @@ void PscomAdapter::scaleImageIntoHeight(
 ) const {
     assertFileFormat(path);
     if (height <= 0) {
-        qFatal("Height out of range: %i", height);
+        const auto utf8 = QObject::tr("Height out of range: %1")
+            .arg(height)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     if (_PSCOM(sh, path, height)) { return; }
 
-    const auto utf8 = path.toUtf8();
-    qFatal("Could not resize file: \"%s\"", utf8.constData());
+    const auto utf8 = QObject::tr("Could not resize file: %1")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::assertExists(const QString & path) const {
     if (exists(path)) { return; }
-    const auto utf8 = path.toUtf8();
-    qFatal("Path does not exist: \"%s\"", utf8.constData());
+
+    const auto utf8 = QObject::tr("Path does not exist: \"%1\"")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::assertDirectory(const QString & path) const {
     if (existsDirectory(path)) { return; }
+
     assertExists(path); // for differentiated error message
-    const auto utf8 = path.toUtf8();
-    qFatal("Directory does not exist: \"%s\"", utf8.constData());
+    const auto utf8 = QObject::tr("Directory does not exist: \"%1\"")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::assertFile(const QString & path) const {
     if (existsFile(path)) { return; }
+
     assertExists(path); // for differentiated error message
-    const auto utf8 = path.toUtf8();
-    qFatal("File does not exist: \"%s\"", utf8.constData());
+    const auto utf8 = QObject::tr("File does not exist: \"%1\"")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::assertFileFormat(const QString & path) const {
     if (supportsFile(path)) { return; }
 
-    const auto utf8 = path.toUtf8();
-    qFatal("File format not supported: \"%s\"", utf8.constData());
+    const auto utf8 = QObject::tr("File format not supported: \"%1\"")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::assertFormat(const QString & format) const {
     if (supportsFormat(format)) { return; }
 
-    const auto utf8 = format.toUtf8();
-    qFatal("Image format not supported: \"%s\"", utf8.constData());
+    const auto utf8 = QObject::tr("Image format not supported: \"%1\"")
+        .arg(format)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 void PscomAdapter::denyExists(const QString & path) const {
     if (!exists(path)) { return; }
-    const auto utf8 = path.toUtf8();
-    qFatal("File already exists: \"%s\"", utf8.constData());
+
+    const auto utf8 = QObject::tr("File aready exists: \"%1\"")
+        .arg(path)
+        .toUtf8();
+    qFatal("%s", utf8.constData());
 }
 
 PscomSimulator::PscomSimulator(
@@ -380,11 +427,11 @@ void PscomSimulator::assertFormat(const QString & format) const {
 void PscomSimulator::copyFile(
     const QString & source, const QString & destination
 ) const {
-    log(QString("copy \"%1\" \"%2\"").arg(source).arg(destination));
+    log(QObject::tr("copy \"%1\" to \"%2\"").arg(source).arg(destination));
 }
 
 void PscomSimulator::createDirectory(const QString & pathInDirectory) const {
-    log(QString("create directory for \"%1\"").arg(pathInDirectory));
+    log(QObject::tr("create directory for \"%1\"").arg(pathInDirectory));
 }
 
 bool PscomSimulator::exists(const QString & path) const {
@@ -448,7 +495,7 @@ const QString PscomSimulator::makeSuffix(
 void PscomSimulator::moveFile(
     const QString & source, const QString & destination
 ) const {
-    log(QString("move \"%1\" \"%2\"").arg(source).arg(destination));
+    log(QObject::tr("move \"%1\" to \"%2\"").arg(source).arg(destination));
 }
 
 bool PscomSimulator::supportsFile(const QString & path) const {
@@ -456,7 +503,7 @@ bool PscomSimulator::supportsFile(const QString & path) const {
 }
 
 void PscomSimulator::removeFile(const QString & path) const {
-    log(QString("remove \"%1\"").arg(path));
+    log(QObject::tr("remove \"%1\"").arg(path));
 }
 
 const QString PscomSimulator::convertImage(
@@ -467,12 +514,12 @@ const QString PscomSimulator::convertImage(
     // Workaround to disable "Argument missing" warning from QString ...
     // See https://forum.qt.io/topic/62525/ignore-unused-args-in-qstring-arg.
     int argc = 0;
-    auto logFormat = QString("convert \"%%1\"").arg(++argc);
+    auto logFormat = QObject::tr("convert \"%%1\"").arg(++argc);
     if (reformat) {
-        logFormat += QString(" to %%1").arg(++argc);
+        logFormat += QObject::tr(" to %1").arg("%%1").arg(++argc);
     }
     if (quality != -1) {
-        logFormat += QString(" to quality=%%1").arg(++argc);
+        logFormat += QObject::tr(" to quality=%1").arg("%%1").arg(++argc);
     }
     auto logString = logFormat.arg(path);
     if (reformat) {
@@ -491,17 +538,18 @@ const QString PscomSimulator::convertImage(
 void PscomSimulator::scaleImage(
     const QString & path, int width, int height
 ) const {
-    log(QString("scale \"%1\" to %2x%3").arg(path).arg(width).arg(height));
+    log(QObject::tr("scale \"%1\" to %2x%3")
+        .arg(path).arg(width).arg(height));
 }
 
 void PscomSimulator::scaleImageIntoWidth(
     const QString & path, int width
 ) const {
-    log(QString("scale \"%1\" to width=%2").arg(path).arg(width));
+    log(QObject::tr("scale \"%1\" to width=%2").arg(path).arg(width));
 }
 
 void PscomSimulator::scaleImageIntoHeight(
     const QString & path, int height
 ) const {
-    log(QString("scale \"%1\" to height=%2").arg(path).arg(height));
+    log(QObject::tr("scale \"%1\" to height=%2").arg(path).arg(height));
 }

@@ -58,16 +58,23 @@ void PscomEngine::findFiles(
 
     if (directory == "-") {
         if (bool(dateMin) || bool(dateMax) || !regex.isEmpty()) {
-            qFatal("Filter options are not available for standard input");
+            const auto utf8 = QObject::tr(
+                "Filter options are not available for standard input"
+            ).toUtf8();
+            qFatal("%s", utf8.constData());
         }
-        qDebug() << "Reading file list from standard input ..." << Qt::endl;
+        qDebug()
+            << QObject::tr("Reading file list from standard input ...")
+            << Qt::endl;
         allFiles = readFileList(_app->cin());
     } else {
-        qDebug() << "Searching files according to filters ..." << Qt::endl;
+        qDebug()
+            << QObject::tr("Searching files matching filters ...")
+            << Qt::endl;
         allFiles = searchFiles(directory, recursive, dateMin, dateMax, regex);
     }
     qDebug().noquote()
-        << QString("Found %1 matching files").arg(allFiles.size())
+        << QObject::tr("Found %1 matching files").arg(allFiles.size())
         << Qt::endl;
 
     const auto formats = _core->supportedFormats();
@@ -93,14 +100,18 @@ const QStringList PscomEngine::searchFiles(
     const QRegExp & regex) const
 {
     if (dateMin.has_value() && !dateMin.value().isValid()) {
-        qFatal("Invalid minimum date");
+        const auto utf8 = QObject::tr("Invalid minimum date").toUtf8();
+        qFatal("%s", utf8.constData());
     }
     if (dateMax.has_value() && !dateMax.value().isValid()) {
-        qFatal("Invalid minimum date");
+        const auto utf8 = QObject::tr("Invalid minimum date").toUtf8();
+        qFatal("%s", utf8.constData());
     }
     if (!regex.isValid()) {
-        const auto utf8 = regex.errorString().toUtf8();
-        qFatal("Invalid regular expression: %s", utf8.constData());
+        const auto utf8 = QObject::tr("Invalid regular expression: %1")
+            .arg(regex.errorString())
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     QList<QStringList> fileLists;
@@ -122,7 +133,8 @@ const QStringList PscomEngine::searchFiles(
         return _core->findFiles(directory, QRegExp(".*"), recursive);
     }
     if (fileLists.size() > 1) {
-        qDebug("Intersecting files from %i sources", fileLists.size());
+        qDebug().noquote() << QObject::tr(
+            "Intersecting files from %i sources").arg(fileLists.size());
     }
     return intersection(fileLists);
 }
@@ -132,9 +144,8 @@ void PscomEngine::processFiles(
     const QString & completeMessage
 ) const {
     if (completeMessage == nullptr) {
-        processFiles(
-            function,
-            "Files processed: %1, skipped: %2.");
+        processFiles(function, QObject::tr(
+            "Files processed: %1, skipped: %2."));
         return;
     }
 
@@ -179,9 +190,8 @@ c03ef00241944c4c481f22a5e28d440b61b2fb66/src/components/buildinfo.ts#L226 */
         }
     } else {
         for (const auto file : _files) {
-            const auto utf8 = QString(
-                    "Processing \"%1\" ... (%2/%3)"
-                ).arg(file).arg(++i).arg(n)
+            const auto utf8 = QObject::tr("Processing \"%1\" ... (%2/%3)")
+                .arg(file).arg(++i).arg(n)
                 .toUtf8();
             qInfo("%s", utf8.constData());
             if (function(file)) {
@@ -194,8 +204,8 @@ c03ef00241944c4c481f22a5e28d440b61b2fb66/src/components/buildinfo.ts#L226 */
     if (completeMessage != nullptr) {
         const auto utf8 = (
             (dynamic_cast<PscomSimulator*>(_core) == nullptr
-                ? "Result: "
-                : "Theoretic result: "
+                ? QObject::tr("Result: ")
+                : QObject::tr("Theoretic result: ")
             ) + completeMessage.arg(cSuccess).arg(cSkipped)).toUtf8();
         qInfo("%s", utf8.constData());
     }
@@ -213,7 +223,7 @@ void PscomEngine::copyFiles(const QString & target) {
     processFiles([&](const QString & file){
         const auto newPath = dir.filePath(QFileInfo(file).fileName());
         return copyFile(file, newPath);
-    }, "Files copied: %1, skipped: %2.");
+    }, QObject::tr("Files copied: %1, skipped: %2."));
 };
 
 void PscomEngine::moveFiles(const QString & target) {
@@ -222,7 +232,7 @@ void PscomEngine::moveFiles(const QString & target) {
     processFiles([&](const QString & file){
         const auto newPath = dir.filePath(QFileInfo(file).fileName());
         return moveFile(file, newPath);
-    }, "Files moved: %1, skipped: %2.");
+    }, QObject::tr("Files moved: %1, skipped: %2."));
 };
 
 void PscomEngine::renameFiles(const QString & schema) {
@@ -230,7 +240,7 @@ void PscomEngine::renameFiles(const QString & schema) {
         const auto date = _core->getDate(file);
         const auto newPath = _core->makeFilePath(file, date, schema);
         return moveFile(file, newPath);
-    }, "Files renamed: %1, skipped: %2.");
+    }, QObject::tr("Files renamed: %1, skipped: %2."));
 };
 
 void PscomEngine::groupFiles(const QString & schema) {
@@ -246,12 +256,15 @@ void PscomEngine::groupFiles(const QString & schema) {
         }
 
         return moveFile(file, newPath);
-    }, "Files grouped: %1, skipped: %2.");
+    }, QObject::tr("Files grouped: %1, skipped: %2."));
 };
 
 void PscomEngine::resizeFiles(int width, int height) {
     if (width == -1 && height == -1) {
-        qFatal("Either width or height must be specified");
+        const auto utf8 = QObject::tr(
+            "Either width or height must be specified"
+        ).toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     std::function<void(const QString &)> function;
@@ -262,14 +275,16 @@ void PscomEngine::resizeFiles(int width, int height) {
     } elif (width != -1) {
         assert(height == -1);
         if (width <= 0) {
-            qFatal("Width out of range");
+            const auto utf8 = QObject::tr("Width out of range").toUtf8();
+            qFatal("%s", utf8.constData());
         }
         function = [&](const QString & file){
             _core->scaleImageIntoWidth(file, width);
         };
     } elif (height != -1) {
         if (width <= 0) {
-            qFatal("Height out of range");
+            const auto utf8 = QObject::tr("Height out of range").toUtf8();
+            qFatal("%s", utf8.constData());
         }
         function = [&](const QString & file){
             _core->scaleImageIntoHeight(file, height);
@@ -281,19 +296,24 @@ void PscomEngine::resizeFiles(int width, int height) {
         if (!confirmOverwrite(file)) { return false; }
         function(file);
         return true;
-    }, "Files resized: %1, skipped: %2.");
+    }, QObject::tr("Files resized: %1, skipped: %2."));
 }
 
 void PscomEngine::convertFiles(QString format, int quality) {
     if (format == nullptr && quality == -1) {
-        qFatal("No conversion options specified");
+        const auto utf8 = QObject::tr("No conversion options specified")
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     if (format != nullptr) {
         _core->assertFormat(format);
     }
     if (quality != -1 && (quality < 0 || quality > 100)) {
-        qFatal("Quality out of range: %i", quality);
+        const auto utf8 = QObject::tr("Quality out of range: %1")
+            .arg(quality)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     processFiles([&](const QString & file){
@@ -309,7 +329,7 @@ void PscomEngine::convertFiles(QString format, int quality) {
 
         _core->convertImage(file, newFormat, quality);
         return true;
-    }, "Files converted: %1, skipped: %2.");
+    }, QObject::tr("Files converted: %1, skipped: %2."));
 }
 
 bool PscomEngine::copyFile(const QString & oldPath, const QString & newPath) {
@@ -330,12 +350,14 @@ bool PscomEngine::moveFile(const QString & oldPath, const QString & newPath) {
 
 bool PscomEngine::confirmOverwrite(const QString & path) {
     if (!_core->exists(path)) {
-        const auto utf8 = path.toUtf8();
-        qFatal("File not found: %s", utf8.constData());
+        const auto utf8 = QObject::tr("File not found: %1")
+            .arg(path)
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     switch (getFileExistsReaction(
-        "This will overwite the file: \"%1\". Proceed?", path)
+        QObject::tr("This will overwrite the file: \"%1\". Proceed?"), path)
     ) {
         case FileExistsReaction::Skip:
             return false;
@@ -358,7 +380,9 @@ bool PscomEngine::confirmOverwrite(const QString & path) {
 bool PscomEngine::denyExists(const QString & path) {
     if (!_core->exists(path)) { return true; }
 
-    switch (getFileExistsReaction("File already exists: \"%1\"", path)) {
+    switch (getFileExistsReaction(
+        QObject::tr("File already exists: \"%1\""), path)
+    ) {
         case FileExistsReaction::Skip:
             return false;
         case FileExistsReaction::Overwrite:
@@ -391,12 +415,12 @@ FileExistsReaction PscomEngine::getFileExistsReaction(
         qFatal("%s", utf8.constData());
     };
     switch (_app->interactiveRequest(messageText, {
-        {'o', "overwrite"},
-        {'O', "overwrite all"},
-        {'s', "skip"},
-        {'S', "skip all"},
-        {'b', "backup"},
-        {'B', "backup all"}
+        {'o', QObject::tr("overwrite")},
+        {'O', QObject::tr("overwrite all")},
+        {'s', QObject::tr("skip")},
+        {'S', QObject::tr("skip all")},
+        {'b', QObject::tr("backup")},
+        {'B', QObject::tr("backup all")}
     })) {
         case 2:
             fileExistsReaction = FileExistsReaction::Overwrite;

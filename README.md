@@ -36,3 +36,24 @@ Filters:
   --mi, min-date -- minimum date
   --ma, max-date -- maximum date
 ```
+
+Pattern: &lt;example command&gt; \[&lt;relevant methods from `pscom.h`&gt;\]
+
+- **Find images:** `pscom-cli list` [`re`, `dt`]
+  * by time filter: `pscom-cli list --before=2017-04-17 --after=2017-02-08`
+  * by regex: `pscom-cli list --regex='car[it]'`
+    + TODO: Should regex be full patterns always? API says yes, but we could circumvent.
+- **Copy or move images:** [`cp`, `mv`]
+  * copy: `pscom-cli copy <target> <filter>`
+  * move: `pscom-cli move <target> <filter>`
+- **Rename images by scheme:** [`fn`/`fp`?, `mv`]
+  * UPA scheme: `pscom-cli rename`
+  * custom scheme: `pscom-cli rename --scheme=<scheme>`
+- **Group images by scheme:** [`fp`?, `mv`]
+  * UPA scheme: `pscom-cli group`
+  * custom scheme: `pscom-cli group --scheme=<scheme>`
+  * single group: `pscom-cli group-single --name=<name>`
+- **Scale down images:** [`sw`, `sh`, `ss`]
+  * `pscom-cli rescale --width=<width> --height=<height>`
+- **Convert images into different format or quality:** \[`cf`\]
+  * `pscom-cli convert --format=<format> --quality=<quality>`

@@ -4,8 +4,39 @@
 		{
 			"label": "build pscom-cli",
 			"type": "shell",
+			"command": "/bin/true",
+			"problemMatcher": [],
+			"dependsOn": [
+				"compile pscom-cli",
+				"translations for pscom-cli"
+			],
+			"group": "build",
+			"detail": "<ALL>"
+		},
+		{
+			"label": "translations for pscom-cli",
+			"type": "shell",
+			"command": "/bin/bash",
+			"args": [
+				"-c",
+				"/usr/bin/lupdate pscom-cli.pro && /usr/bin/lrelease pscom-cli.pro"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/pscom-cli"
+			},
+			"group": "build",
+			"dependsOn": [
+				"make pscom-cli"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "compile pscom-cli",
+			"type": "shell",
 			"command": "/usr/bin/make",
-			"args": ["CONFIG+=debug"],
+			"args": [
+				"CONFIG+=debug"
+			],
 			"options": {
 				"cwd": "${workspaceFolder}/pscom-cli"
 			},
@@ -14,13 +45,18 @@
 			],
 			"group": "build",
 			"detail": "qmake",
-			"dependsOn": ["make pscom-cli", "build pscom"]
+			"dependsOn": [
+				"make pscom-cli",
+				"build pscom"
+			]
 		},
 		{
 			"label": "build pscom",
 			"type": "shell",
 			"command": "/usr/bin/make",
-			"args": ["CONFIG+=debug"],
+			"args": [
+				"CONFIG+=debug"
+			],
 			"options": {
 				"cwd": "${workspaceFolder}/pscom"
 			},
@@ -29,13 +65,17 @@
 			],
 			"group": "build",
 			"detail": "qmake",
-			"dependsOn": ["make pscom"]
+			"dependsOn": [
+				"make pscom"
+			]
 		},
 		{
 			"label": "make pscom-cli",
 			"type": "shell",
 			"command": "/usr/bin/qmake",
-			"args": ["CONFIG+=debug"],
+			"args": [
+				"CONFIG+=debug"
+			],
 			"options": {
 				"cwd": "${workspaceFolder}/pscom-cli"
 			},
@@ -49,7 +89,9 @@
 			"label": "make pscom",
 			"type": "shell",
 			"command": "/usr/bin/qmake",
-			"args": ["CONFIG+=debug"],
+			"args": [
+				"CONFIG+=debug"
+			],
 			"options": {
 				"cwd": "${workspaceFolder}/pscom"
 			},

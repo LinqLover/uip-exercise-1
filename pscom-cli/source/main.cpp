@@ -12,10 +12,13 @@
 #include <QCoreApplication>
 #include <QCommandLineOption>
 #include <QDebug>
+#include <QLibraryInfo>
 #include <QList>
+#include <QObject>
 #include <QPair>
 #include <QRegExp>
 #include <QTextStream>
+#include <QTranslator>
 
 #include "command.h"
 #include "engine.h"
@@ -41,113 +44,144 @@ int main(int argc, char *argv[])
     // QCoreApplication::setApplicationName("pscom-cli");
     QCoreApplication::setApplicationVersion("3.0.0");
     auto app = PscomApp(argc, argv);
+    QTranslator qtTranslator;
+    if (!qtTranslator.load(
+        QLocale(), "qt", "_",
+        QLibraryInfo::location(QLibraryInfo::TranslationsPath), {})
+    ) {
+        qWarning("Could not load system translation files");
+    }
+    app.installTranslator(&qtTranslator);
+    QTranslator appTranslator;
+    if (!appTranslator.load(
+        QLocale(), "pscom-cli", "_",
+        QFileInfo(app.applicationDirPath()).absoluteDir()
+            .absoluteFilePath("resources/translations"))
+    ) {
+        qWarning("Could not load application translation files");
+    }
+    app.installTranslator(&appTranslator);
+
     IPscomCore *core = new PscomAdapter();
 
     PscomCommandLineParser parser(app);
-    parser.setApplicationDescription("Photo system command-line tool");
+    parser.setApplicationDescription(QObject::tr("Photo system command-line tool"));
     parser._showVersionCallback = std::bind(
         &PscomEngine::showVersion, PscomEngine(app, *core));
 
     parser.addOptions({
         {
             QStringList{"h", "help", "?"},
-            "Displays help on command-line options."
+            QObject::tr("Displays help on command-line options.")
         },
         {
             QStringList{"V", "version"},
-            "Displays version information."
+            QObject::tr("Displays version information.")
         }
     });
     QCommandLineOption optionVerbose(
         QStringList{"v", "verbose"},
-        "Verbose mode. Specify up to 2 times to increase the verbosity level"
-        "of output messages. Opposite of quiet mode."
+        QObject::tr(
+            "Verbose mode. Specify up to %1 times to increase the verbosity "
+            "level of output messages. Opposite of quiet mode."
+        ).arg(2)
     );
     QCommandLineOption optionQuiet(
         QStringList{"q", "quiet"},
-        "Quiet mode. Specify up to 2 times to decrease the verbosity level "
-        "of output messages. Opposite of verbose mode."
+        QObject::tr(
+            "Quiet mode. Specify up to %1 times to decrease the verbosity "
+            "level of output messages. Opposite of verbose mode."
+        ).arg(2)
     );
     QCommandLineOption optionOnConflict(
         QStringList{"on-conflict"},
-        "Conflict resolution strategy to be applied when a destructive "
-        "operation is run. Can be one of the following:"
-        "\n- overwrite: Overwrite the original file irrecoverably."
-        "\n- skip: Just forget this incident and continue with the next "
-            "file."
-        "\n- backup: Create a backup of the original file (by appending a "
-            "squiggle to its file name) and then overwrite it.",
+        QString(QObject::tr(
+            "Conflict resolution strategy to be applied when a destructive "
+            "operation is run. Can be one of the following:"
+            "\n- overwrite: Overwrite the original file irrecoverably."
+            "\n- skip: Just forget this incident and continue with the next "
+                "file."
+            "\n- backup: Create a backup of the original file (by appending "
+                "a squiggle (%1) to its file name) and then overwrite it."
+        )).arg("~"),
         "strategy"
     );
     QCommandLineOption optionForce(
         QStringList{"f", "force"},
-        QString("Enforce possibly destructive operations regardless of the "
-                "consequences. Equivalent to %1=%2."
+        QString(QObject::tr(
+            "Enforce possibly destructive operations regardless of the "
+            "consequences. Equivalent to %1=%2.")
         ).arg(optionOnConflict.names().last()).arg("overwrite")
     );
     QCommandLineOption optionSupportedFormats(
         QStringList{"supported-formats"},
-        "Display all supported image formats."
+        QObject::tr("Display all supported image formats.")
     );
     QCommandLineOption optionDirectory(
         QStringList{"d", "C", "directory"},
-        QString(
+        QString(QObject::tr(
             "The directory to look up image files. Pass a single dash (%1) "
             "to enter a list of image files interactively."
-        ).arg("-"),
+        )).arg("-"),
         "path"
     );
     QCommandLineOption optionRecursive(
         QStringList{"R", "recursive"},
-        "Include subdirectories."
+        QObject::tr("Include subdirectories.")
     );
     QCommandLineOption optionRegex(
         QStringList{"r", "regex"},
-        QString(
+        QString(QObject::tr(
             "A regular expression to filter image files. Does not need to "
             "match the entire file name; use text anchors (%1) for full "
             "matches."
-        ).arg("^ $"),
+        )).arg("^ $"),
         "pattern"
     );
     QCommandLineOption optionDateMin(
         QStringList{"min", "min-date"},
-        "Reject images older than the given date and time.",
+        QObject::tr("Reject images older than the given date and time."),
         "date"
     );
     QCommandLineOption optionDateMax(
         QStringList{"max", "max-date"},
-        "Reject images newer than the given date and time. NOTE: If you only "
-        "specify the date, it will be treated as midnight time.",
+        QObject::tr(
+            "Reject images newer than the given date and time. NOTE: If you "
+            "only specify the date, it will be treated as midnight time."),
         "date"
     );
     QCommandLineOption optionDryRun(
         QStringList{"dry-run"},
-        "Only simulate all modifications to the filesystem instead of "
-        "actually applying them. Can be helpful to understand the "
-        "consequences of your complicated invocation without hazarding your "
-        "entire photo library."
+        QObject::tr(
+            "Only simulate all modifications to the filesystem instead of "
+            "actually applying them. Can be helpful to understand the "
+            "consequences of your complicated invocation without hazarding "
+            "your entire photo library.")
     );
     QCommandLineOption optionWidth(
         QStringList{"width"},
-        "The width the images should be fit into.",
+        QObject::tr("The width the images should be fit into."),
         "number"
     );
     QCommandLineOption optionHeight(
         QStringList{"height"},
-        "The height the images should be fit into.",
+        QObject::tr("The height the images should be fit into."),
         "number"
     );
     QCommandLineOption optionFormat(
         QStringList{"format"},
-        "The file format (e.g. jpg or png) the images should be converted "
-        "into.",
+        QObject::tr(
+            "The file format (e.g. %1 or %2) the images should be converted "
+            "into."
+        ).arg("jpg", "png"),
         "extension"
     );
     QCommandLineOption optionQuality(
         QStringList{"quality"},
-        "The quality for image conversion. Value between 0 (best compression) "
-        "and 100 (best quality).",
+        QObject::tr(
+            "The quality for image conversion. Value between %1 (best "
+            "compression) and %2 (best quality)."
+        ).arg(0).arg(100),
         "value"
     );
     parser.addOptions({optionVerbose, optionQuiet});
@@ -167,68 +201,79 @@ int main(int argc, char *argv[])
     PscomCommand commandPscom(
         QStringList{"pscom"},
         QStringList{"symbol", "arguments"},
-        "Execute a symbol from the pscom library manually. No safety checks! "
-        "Intended for debugging purposes only.",
+        QObject::tr(
+            "Execute a symbol from the pscom library manually. No safety "
+            "checks! Intended for debugging purposes only."),
         [](PscomEngine &engine){ engine.pscom(QStringList{}); });
     PscomCommand commandList(
         QStringList{"list", "ls"},
         QStringList{},
-        "Display image files.",
+        QObject::tr("Display image files."),
         &PscomEngine::listFiles);
     PscomCommand commandCopy(
         QStringList{"copy", "cp"},
         QStringList{"destination"},
-        "Copy image files into the specified destination folder.",
+        QObject::tr("Copy image files into the specified destination folder."),
         &PscomEngine::copyFiles);
     PscomCommand commandMove(
         QStringList{"move", "mv"},
         QStringList{"destination"},
-        "Move image files into the specified destination folder.",
+        QObject::tr("Move image files into the specified destination folder."),
         &PscomEngine::moveFiles);
-    const auto escapeNote = QString(
+    const auto escapeNote = QString(QObject::tr(
         "To escape date specifiers in the schema, enclose literal parts "
         "into single quotes (%1, or %2 from the bash shell)."
-    ).arg("'").arg("\"'\"");
+    )).arg("'").arg("\"'\"");
     PscomCommand commandRename(
         QStringList{"rename", "rn"},
         QStringList{"schema"},
-        "Rename image files according to the given schema, or according to "
-        "the UPA standard, if omitted. " + escapeNote,
+        QObject::tr(
+            "Rename image files according to the given schema, or according "
+            "to the UPA standard, if omitted. "
+        ) + escapeNote,
         &PscomEngine::renameFiles,
         QStringList{"yyyyMMdd_HHmmsszzz"});
     PscomCommand commandGroup(
         QStringList{"group", "g"},
         QStringList{"schema"},
-        "Group image files into subdirectories according to the given "
-        "schema, or according to the UPA standard, if omitted. " + escapeNote,
+        QObject::tr(
+            "Group image files into subdirectories according to the given "
+            "schema, or according to the UPA standard, if omitted. "
+        ) + escapeNote,
         &PscomEngine::groupFiles,
         QStringList{"yyyy/yyyy-MM"});
     PscomCommand commandResize(
         QStringList{"resize"},
         QStringList{},
-        "Resize image files into the given dimensions.",
+        QObject::tr("Resize image files into the given dimensions."),
         [&parser, &optionWidth, &optionHeight](PscomEngine &engine){
             bool ok = true;
             const auto width = parser.isSet(optionWidth)
                 ? parser.value(optionWidth).toInt(&ok)
                 : -1;
             if (!ok) {
-                const auto utf8 = optionWidth.names().last().toUtf8();
-                qFatal("%s: Invalid number was specified", utf8.constData());
+                const auto utf8 = QObject::tr("%1: Invalid number was specified")
+                    .arg(optionWidth.names().last())
+                    .toUtf8();
+                qFatal("%s", utf8.constData());
             }
             const auto height = parser.isSet(optionHeight)
                 ? parser.value(optionHeight).toInt(&ok)
                 : -1;
             if (!ok) {
-                const auto utf8 = optionHeight.names().last().toUtf8();
-                qFatal("%s: Invalid number was specified", utf8.constData());
+                const auto utf8 = QObject::tr("%1: Invalid number was specified")
+                    .arg(optionHeight.names().last())
+                    .toUtf8();
+                qFatal("%s", utf8.constData());
             }
             engine.resizeFiles(width, height);
         });
     PscomCommand commandConvert(
         QStringList{"convert"},
         QStringList{},
-        "Convert image files into a different file format and/or quality.",
+        QObject::tr(
+            "Convert image files into a different file format and/or "
+            "quality."),
         [&parser, &optionFormat, &optionQuality](PscomEngine &engine){
             const auto format = parser.isSet(optionFormat)
                 ? parser.value(optionFormat)
@@ -238,8 +283,10 @@ int main(int argc, char *argv[])
                 ? parser.value(optionQuality).toInt(&ok)
                 : -1;
             if (!ok) {
-                const auto utf8 = optionQuality.names().last().toUtf8();
-                qFatal("%s: Invalid number was specified", utf8.constData());
+                const auto utf8 = QObject::tr("%1: Invalid number was specified")
+                    .arg(optionQuality.names().last())
+                    .toUtf8();
+                qFatal("%s", utf8.constData());
             }
             engine.convertFiles(format, quality);
         });
@@ -257,12 +304,11 @@ int main(int argc, char *argv[])
     parser.process();
 
     if (parser.isSet(optionOnConflict) && parser.isSet(optionForce)) {
-        const auto
-            utf8_1 = optionOnConflict.names().last().toUtf8(),
-            utf8_2 = optionForce.names().last().toUtf8();
-        qFatal(
-            "Cannot combine options %s and %s",
-            utf8_1.constData(), utf8_2.constData());
+        const auto utf8 = QObject::tr("Cannot combine options %1 and %2")
+            .arg(optionOnConflict.names().last())
+            .arg(optionForce.names().last())
+            .toUtf8();
+        qFatal("%s", utf8.constData());
     }
 
     if (parser.isSet(optionVerbose) || parser.isSet(optionQuiet)) {
@@ -288,12 +334,11 @@ int main(int argc, char *argv[])
         } elif (conflictStrategy == "backup") {
             engine.fileExistsReaction = FileExistsReaction::Backup;
         } else {
-            const auto
-                utf8_1 = optionOnConflict.names().last().toUtf8(),
-                utf8_2 = conflictStrategy.toUtf8();
-            qFatal(
-                "Unknown %s strategy: %s",
-                utf8_1.constData(), utf8_2.constData());
+            const auto utf8 = QObject::tr("Unknown {1} strategy: {2}")
+                .arg(optionOnConflict.names().last())
+                .arg(conflictStrategy)
+                .toUtf8();
+            qFatal("%s", utf8.constData());
         }
     }
 
