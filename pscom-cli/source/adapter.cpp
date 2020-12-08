@@ -257,6 +257,9 @@ const QString PscomAdapter::convertImage(
     assertFormat(suffix);
     const auto newPath = makeSuffix(path, suffix);
     denyExists(newPath); // TODO: Allow to overwrite
+    if (quality != -1 && (quality < 0 || quality > 100)) {
+        qFatal("Quality out of range: %i", quality);
+    }
 
     if (_PSCOM(cf, path, suffix, quality)) { return newPath; }
 
@@ -268,6 +271,12 @@ void PscomAdapter::scaleImage(
     const QString & path, int width, int height
 ) const {
     assertFileFormat(path);
+    if (width <= 0) {
+        qFatal("Width out of range: %i", width);
+    }
+    if (height <= 0) {
+        qFatal("Height out of range: %i", height);
+    }
 
     if (_PSCOM(ss, path, width, height)) { return; }
 
@@ -279,6 +288,9 @@ void PscomAdapter::scaleImageIntoWidth(
     const QString & path, int width
 ) const {
     assertFileFormat(path);
+    if (width <= 0) {
+        qFatal("Width out of range: %i", width);
+    }
 
     if (_PSCOM(sw, path, width)) { return; }
 
@@ -290,6 +302,9 @@ void PscomAdapter::scaleImageIntoHeight(
     const QString & path, int height
 ) const {
     assertFileFormat(path);
+    if (height <= 0) {
+        qFatal("Height out of range: %i", height);
+    }
 
     if (_PSCOM(sh, path, height)) { return; }
 
