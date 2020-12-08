@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
         QStringList{"pscom"},
         QStringList{"symbol", "arguments"},
         "Execute a symbol from the pscom library manually. No safety checks! "
-        "Intended for debugging only.",
+        "Intended for debugging purposes only.",
         [](PscomEngine &engine){ engine.pscom(QStringList{}); });
     PscomCommand commandList(
         QStringList{"list", "ls"},
