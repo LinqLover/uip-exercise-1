@@ -72,12 +72,12 @@ int main(int argc, char *argv[])
         QStringList{"on-conflict"},
         "Conflict resolution strategy to be applied when a destructive "
         "operation is run. Can be one of the following:"
-        "\n- overwrite: Overwrite the original file irrecoveably."
-        "\n- skip: Just forget the incident and continue with the next "
+        "\n- overwrite: Overwrite the original file irrecoverably."
+        "\n- skip: Just forget this incident and continue with the next "
             "file."
         "\n- backup: Create a backup of the original file (by appending a "
             "squiggle to its file name) and then overwrite it.",
-        "action"
+        "strategy"
     );
     QCommandLineOption optionForce(
         QStringList{"f", "force"},
@@ -101,8 +101,9 @@ int main(int argc, char *argv[])
     QCommandLineOption optionRegex(
         QStringList{"r", "regex"},
         QString(
-            "A regular expression to filter image files. Must not match the "
-            "entire file name; use text anchors (%1) for full matches."
+            "A regular expression to filter image files. Does not need to "
+            "match the entire file name; use text anchors (%1) for full "
+            "matches."
         ).arg("^ $"),
         "pattern"
     );
@@ -119,11 +120,14 @@ int main(int argc, char *argv[])
     );
     QCommandLineOption optionDryRun(
         QStringList{"dry-run"},
-        "todo."
+        "Simulate all modifications to the filesystem only instead of "
+        "actually running them. Can be helpful to understand the "
+        "consequences of your complicated invocation without hazarding your "
+        "entire photo library."
     );
     QCommandLineOption optionWidth(
         QStringList{"max-width"},
-        "the width the images should be fit into",
+        "The width the images should be fit into.",
         "number"
     );
     QCommandLineOption optionHeight(
@@ -161,7 +165,7 @@ int main(int argc, char *argv[])
         QStringList{"pscom"},
         QStringList{"symbol", "arguments"},
         "Execute a symbol from the pscom library manually. No safety checks! "
-        "Intended for development use only.",
+        "Intended for debugging only.",
         [](PscomEngine &engine){ engine.pscom(QStringList{}); });
     PscomCommand commandList(
         QStringList{"list", "ls"},
@@ -179,7 +183,7 @@ int main(int argc, char *argv[])
         "Move image files into the specified destination folder.",
         &PscomEngine::moveFiles);
     const auto escapeNote = QString(
-        "To escape format selectors in the schema, enclose literal parts "
+        "To escape date specifiers in the schema, enclose literal parts "
         "into single quotes (%1, or %2 from the bash shell)."
     ).arg("'").arg("\"'\"");
     PscomCommand commandRename(
