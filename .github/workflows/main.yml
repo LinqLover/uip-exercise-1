@@ -17,8 +17,8 @@ jobs:
       working-directory: ./pscom-cli
       run: |
         qmake
-        make
         lrelease pscom-cli.pro
+        make
     - name: Run pscom-cli
       env:
         LD_LIBRARY_PATH: ./pscom/lib
