@@ -91,7 +91,10 @@ int main(int argc, char *argv[])
     );
     QCommandLineOption optionDirectory(
         QStringList{"d", "C", "directory"},
-        "The directory to look up image files.",
+        QString(
+            "The directory to look up image files. Pass a single dash (%1) "
+            "to enter a list of image files interactively."
+        ).arg("-"),
         "path"
     );
     QCommandLineOption optionRecursive(
@@ -120,8 +123,8 @@ int main(int argc, char *argv[])
     );
     QCommandLineOption optionDryRun(
         QStringList{"dry-run"},
-        "Simulate all modifications to the filesystem only instead of "
-        "actually running them. Can be helpful to understand the "
+        "Only simulate all modifications to the filesystem instead of "
+        "actually applying them. Can be helpful to understand the "
         "consequences of your complicated invocation without hazarding your "
         "entire photo library."
     );
