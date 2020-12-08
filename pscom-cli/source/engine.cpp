@@ -128,8 +128,16 @@ const QStringList PscomEngine::searchFiles(
 }
 
 void PscomEngine::processFiles(
-    std::function<void(const QString &)> function
+    std::function<bool(const QString &)> function,
+    const QString & completeMessage
 ) const {
+    if (completeMessage == nullptr) {
+        processFiles(
+            function,
+            "Files processed: %1, skipped: %2.");
+        return;
+    }
+
     const auto n = _files.size();
 
     const auto verbosityLevel = getVerbosityLevel();
@@ -140,7 +148,7 @@ void PscomEngine::processFiles(
         return;
     }
 
-    int i = 0;
+    int i = 0, cSuccess = 0, cSkipped = 0;
     if (_app->isCerrInteractive()
         // debug outputs could conflict with progress bar
         && verbosityLevel <= VerbosityLevel::Debug
@@ -163,9 +171,12 @@ c03ef00241944c4c481f22a5e28d440b61b2fb66/src/components/buildinfo.ts#L226 */
                 "[%1] (%2/%3)\r"
             ).arg(bar).arg(i).arg(n);
             stream.flush();
-            function(file);
+            if (function(file)) {
+                cSuccess++;
+            } else {
+                cSkipped++;
+            }
         }
-        stream << '\n';
     } else {
         for (const auto file : _files) {
             const auto utf8 = QString(
@@ -173,8 +184,20 @@ c03ef00241944c4c481f22a5e28d440b61b2fb66/src/components/buildinfo.ts#L226 */
                 ).arg(file).arg(++i).arg(n)
                 .toUtf8();
             qInfo("%s", utf8.constData());
-            function(file);
+            if (function(file)) {
+                cSuccess++;
+            } else {
+                cSkipped++;
+            }
         }
+    }
+    if (completeMessage != nullptr) {
+        const auto utf8 = (
+            (dynamic_cast<PscomSimulator*>(_core) == nullptr
+                ? "Result: "
+                : "Theoretic result: "
+            ) + completeMessage.arg(cSuccess).arg(cSkipped)).toUtf8();
+        qInfo("%s", utf8.constData());
     }
 }
 
@@ -189,8 +212,8 @@ void PscomEngine::copyFiles(const QString & target) {
     const auto dir = QDir(target); // WORKAROUND: we should not use QFileInfo etc.
     processFiles([&](const QString & file){
         const auto newPath = dir.filePath(QFileInfo(file).fileName());
-        copyFile(file, newPath);
-    });
+        return copyFile(file, newPath);
+    }, "Files copied: %1, skipped: %2.");
 };
 
 void PscomEngine::moveFiles(const QString & target) {
@@ -198,31 +221,32 @@ void PscomEngine::moveFiles(const QString & target) {
     const auto dir = QDir(target); // WORKAROUND: we should not use QFileInfo etc.
     processFiles([&](const QString & file){
         const auto newPath = dir.filePath(QFileInfo(file).fileName());
-        moveFile(file, newPath);
-    });
+        return moveFile(file, newPath);
+    }, "Files moved: %1, skipped: %2.");
 };
 
 void PscomEngine::renameFiles(const QString & schema) {
     processFiles([&](const QString & file){
         const auto date = _core->getDate(file);
         const auto newPath = _core->makeFilePath(file, date, schema);
-        moveFile(file, newPath);
-    });
+        return moveFile(file, newPath);
+    }, "Files renamed: %1, skipped: %2.");
 };
 
 void PscomEngine::groupFiles(const QString & schema) {
     processFiles([&](const QString & file){
         const auto date = _core->getDate(file);
         const auto newPath = _core->makeDirectoryPath(file, date.date(), schema);
-        if (file == newPath) { return; }
+        if (file == newPath) { return false; }
 
         const auto dir = QFileInfo(newPath).absolutePath();
         if (!_core->existsDirectory(dir)) { // WORKAROUND: we should not use QFileInfo etc.
                                             // If this is not ok, we could call createDirectory once initially, but this would make many restrictions ...
             _core->createDirectory(newPath);
         }
-        moveFile(file, newPath);
-    });
+
+        return moveFile(file, newPath);
+    }, "Files grouped: %1, skipped: %2.");
 };
 
 void PscomEngine::resizeFiles(int width, int height) {
@@ -254,9 +278,10 @@ void PscomEngine::resizeFiles(int width, int height) {
         UNREACHABLE;
     }
     processFiles([&](const QString & file){
-        if (!confirmOverwrite(file)) { return; }
+        if (!confirmOverwrite(file)) { return false; }
         function(file);
-    });
+        return true;
+    }, "Files resized: %1, skipped: %2.");
 }
 
 void PscomEngine::convertFiles(QString format, int quality) {
@@ -280,21 +305,27 @@ void PscomEngine::convertFiles(QString format, int quality) {
         if (!(format != nullptr
             ? denyExists(newPath)
             : confirmOverwrite(newPath))
-        ) { return; }
+        ) { return false; }
+
         _core->convertImage(file, newFormat, quality);
-    });
+        return true;
+    }, "Files converted: %1, skipped: %2.");
 }
 
-void PscomEngine::copyFile(const QString & oldPath, const QString & newPath) {
-    if (oldPath == newPath) { return; }
-    if (!denyExists(newPath)) { return; }
+bool PscomEngine::copyFile(const QString & oldPath, const QString & newPath) {
+    if (oldPath == newPath) { return true; }
+    if (!denyExists(newPath)) { return false; }
+
     _core->copyFile(oldPath, newPath);
+    return true;
 }
 
-void PscomEngine::moveFile(const QString & oldPath, const QString & newPath) {
-    if (oldPath == newPath) { return; }
-    if (!denyExists(newPath)) { return; }
+bool PscomEngine::moveFile(const QString & oldPath, const QString & newPath) {
+    if (oldPath == newPath) { return true; }
+    if (!denyExists(newPath)) { return false; }
+    
     _core->moveFile(oldPath, newPath);
+    return true;
 }
 
 bool PscomEngine::confirmOverwrite(const QString & path) {
@@ -304,7 +335,7 @@ bool PscomEngine::confirmOverwrite(const QString & path) {
     }
 
     switch (getFileExistsReaction(
-        "This will override the file: \"%1\". Proceed?", path)
+        "This will overwite the file: \"%1\". Proceed?", path)
     ) {
         case FileExistsReaction::Skip:
             return false;

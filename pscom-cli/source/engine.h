@@ -26,13 +26,17 @@ private:
     IPscomCore *_core;
     QStringList _files;
 
-    void copyFile(const QString & oldPath, const QString & newPath);
-    void moveFile(const QString & oldPath, const QString & newPath);
+    bool copyFile(const QString & oldPath, const QString & newPath);
+    bool moveFile(const QString & oldPath, const QString & newPath);
     bool confirmOverwrite(const QString & path);
     bool denyExists(const QString & path);
     FileExistsReaction getFileExistsReaction(
         const QString & message,
         const QString & path);
+    void processFiles(
+        std::function<bool(const QString &)> function,
+        const QString & completeMessage = nullptr) const;
+    const QStringList readFileList(QTextStream stream) const;
     const QStringList searchFiles(
         const QString & directory,
         bool recursive,
@@ -61,6 +65,4 @@ public:
         const std::optional<QDateTime> & dateMin = std::nullopt,
         const std::optional<QDateTime> & dateMax = std::nullopt,
         const QRegExp & regex = QRegExp());
-    void processFiles(std::function<void(const QString &)> function) const;
-    const QStringList readFileList(QTextStream stream) const;
 };
