@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
     // Setting the application name is not required, since, if not set, it defaults to the executable name.
     // QCoreApplication::setApplicationName("pscom-cli");
-    QCoreApplication::setApplicationVersion("2.0.0");
+    QCoreApplication::setApplicationVersion("3.0.0");
     auto app = PscomApp(argc, argv);
     IPscomCore *core = new PscomAdapter();
 
@@ -110,13 +110,13 @@ int main(int argc, char *argv[])
         ).arg("^ $"),
         "pattern"
     );
-    QCommandLineOption optionMinDate(
-        QStringList{"mi", "min-date"},
+    QCommandLineOption optionDateMin(
+        QStringList{"min", "min-date"},
         "Reject images older than the given date and time.",
         "date"
     );
-    QCommandLineOption optionMaxDate(
-        QStringList{"ma", "max-date"},
+    QCommandLineOption optionDateMax(
+        QStringList{"max", "max-date"},
         "Reject images newer than the given date and time. NOTE: If you only "
         "specify the date, it will be treated as midnight time.",
         "date"
@@ -129,12 +129,12 @@ int main(int argc, char *argv[])
         "entire photo library."
     );
     QCommandLineOption optionWidth(
-        QStringList{"max-width"},
+        QStringList{"width"},
         "The width the images should be fit into.",
         "number"
     );
     QCommandLineOption optionHeight(
-        QStringList{"max-height"},
+        QStringList{"height"},
         "The height the images should be fit into.",
         "number"
     );
@@ -156,8 +156,8 @@ int main(int argc, char *argv[])
     assert(parser.addOption(optionDirectory));
     assert(parser.addOption(optionRecursive));
     assert(parser.addOption(optionRegex));
-    assert(parser.addOption(optionMinDate));
-    assert(parser.addOption(optionMaxDate));
+    assert(parser.addOption(optionDateMin));
+    assert(parser.addOption(optionDateMax));
     assert(parser.addOption(optionDryRun));
     assert(parser.addOption(optionWidth));
     assert(parser.addOption(optionHeight));
@@ -208,26 +208,40 @@ int main(int argc, char *argv[])
         QStringList{},
         "Resize image files into the given dimensions.",
         [&parser, &optionWidth, &optionHeight](PscomEngine &engine){
-            engine.resizeFiles(
-                parser.isSet(optionWidth)
-                    ? parser.value(optionWidth).toInt()
-                    : -1,
-                parser.isSet(optionHeight)
-                    ? parser.value(optionHeight).toInt()
-                    : -1);
+            bool ok = true;
+            const auto width = parser.isSet(optionWidth)
+                ? parser.value(optionWidth).toInt(&ok)
+                : -1;
+            if (!ok) {
+                const auto utf8 = optionWidth.names().last().toUtf8();
+                qFatal("%s: Invalid number was specified", utf8.constData());
+            }
+            const auto height = parser.isSet(optionHeight)
+                ? parser.value(optionHeight).toInt(&ok)
+                : -1;
+            if (!ok) {
+                const auto utf8 = optionHeight.names().last().toUtf8();
+                qFatal("%s: Invalid number was specified", utf8.constData());
+            }
+            engine.resizeFiles(width, height);
         });
     PscomCommand commandConvert(
         QStringList{"convert"},
         QStringList{},
         "Convert image files into a different file format and/or quality.",
         [&parser, &optionFormat, &optionQuality](PscomEngine &engine){
-            engine.convertFiles(
-                parser.isSet(optionFormat)
-                    ? parser.value(optionFormat)
-                    : nullptr,
-                parser.isSet(optionQuality)
-                    ? parser.value(optionQuality).toInt()
-                    : -1);
+            const auto format = parser.isSet(optionFormat)
+                ? parser.value(optionFormat)
+                : nullptr;
+            bool ok = true;
+            const auto quality = parser.isSet(optionQuality)
+                ? parser.value(optionQuality).toInt(&ok)
+                : -1;
+            if (!ok) {
+                const auto utf8 = optionQuality.names().last().toUtf8();
+                qFatal("%s: Invalid number was specified", utf8.constData());
+            }
+            engine.convertFiles(format, quality);
         });
     parser.addHelpCommand();
     parser.addVersionCommand();
@@ -304,18 +318,17 @@ int main(int argc, char *argv[])
             ? parser.value(optionDirectory)
             : ".";
         const auto recursive = parser.isSet(optionRecursive);
-        const auto dateMin = parser.isSet(optionMinDate)
+        const auto dateMin = parser.isSet(optionDateMin)
             ? std::make_optional(QDateTime::fromString(
-                parser.value(optionMinDate), Qt::ISODateWithMs))
+                parser.value(optionDateMin), Qt::ISODateWithMs))
             : std::nullopt;
-        const auto dateMax = parser.isSet(optionMaxDate)
+        const auto dateMax = parser.isSet(optionDateMax)
             ? std::make_optional(QDateTime::fromString(
-                parser.value(optionMaxDate), Qt::ISODateWithMs))
+                parser.value(optionDateMax), Qt::ISODateWithMs))
             : std::nullopt;
         const auto regex = parser.isSet(optionRegex)
-            ? std::make_optional(QRegExp(
-                ".*" + parser.value(optionRegex) + ".*"))
-            : std::nullopt;
+            ? QRegExp(parser.value(optionRegex))
+            : QRegExp();
 
         engine.findFiles(directory, recursive, dateMin, dateMax, regex);
     }

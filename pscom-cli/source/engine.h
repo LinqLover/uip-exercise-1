@@ -30,6 +30,12 @@ private:
     void moveFile(const QString & oldPath, const QString & newPath);
     bool denyExists(const QString & path);
     FileExistsReaction getFileExistsReaction(const QString & path);
+    const QStringList searchFiles(
+        const QString & directory,
+        bool recursive,
+        const std::optional<QDateTime> & dateMin,
+        const std::optional<QDateTime> & dateMax,
+        const QRegExp & regex) const;
 public:
     PscomEngine(PscomApp & app, IPscomCore & core);
 
@@ -51,13 +57,7 @@ public:
         bool recursive = false,
         const std::optional<QDateTime> & dateMin = std::nullopt,
         const std::optional<QDateTime> & dateMax = std::nullopt,
-        const std::optional<QRegExp> & regex = std::nullopt);
+        const QRegExp & regex = QRegExp());
     void processFiles(std::function<void(const QString &)> function) const;
     const QStringList readFileList(QTextStream stream) const;
-    const QStringList searchFiles(
-        const QString & directory,
-        bool recursive,
-        const std::optional<QDateTime> & dateMin,
-        const std::optional<QDateTime> & dateMax,
-        const std::optional<QRegExp> & regex) const;
 };

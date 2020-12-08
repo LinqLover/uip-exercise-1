@@ -52,12 +52,12 @@ void PscomEngine::findFiles(
     QString directory, bool recursive,
     const std::optional<QDateTime> & dateMin,
     const std::optional<QDateTime> & dateMax,
-    const std::optional<QRegExp> & regex
+    const QRegExp & regex
 ) {
     QStringList allFiles;
 
     if (directory == "-") {
-        if (bool(dateMin) || bool(dateMax) || bool(regex)) {
+        if (bool(dateMin) || bool(dateMax) || !regex.isEmpty()) {
             qFatal("Filter options are not available for standard input");
         }
         qDebug() << "Reading file list from standard input ..." << Qt::endl;
@@ -90,8 +90,19 @@ const QStringList PscomEngine::searchFiles(
     const QString & directory, bool recursive,
     const std::optional<QDateTime> & dateMin,
     const std::optional<QDateTime> & dateMax,
-    const std::optional<QRegExp> & regex) const
+    const QRegExp & regex) const
 {
+    if (dateMin.has_value() && !dateMin.value().isValid()) {
+        qFatal("Invalid minimum date");
+    }
+    if (dateMax.has_value() && !dateMax.value().isValid()) {
+        qFatal("Invalid minimum date");
+    }
+    if (!regex.isValid()) {
+        const auto utf8 = regex.errorString().toUtf8();
+        qFatal("Invalid regular expression: %s", utf8.constData());
+    }
+
     QList<QStringList> fileLists;
     if (bool(dateMin) || bool(dateMax)) {
         fileLists.append(_core->findFiles(
@@ -100,11 +111,12 @@ const QStringList PscomEngine::searchFiles(
             dateMax.value_or(QDATETIME_MAX),
             recursive));
     }
-    if (regex) {
-        fileLists.append(_core->findFiles(
-            directory,
-            regex.value(),
-            recursive));
+    if (!regex.isEmpty()) {
+        const auto fullRegex = QRegExp(
+            ".*" + regex.pattern() + ".*",
+            regex.caseSensitivity(),
+            regex.patternSyntax());
+        fileLists.append(_core->findFiles(directory, fullRegex, recursive));
     }
     if (fileLists.isEmpty()) {
         return _core->findFiles(directory, QRegExp(".*"), recursive);
@@ -225,10 +237,16 @@ void PscomEngine::resizeFiles(int width, int height) const {
         };
     } elif (width != -1) {
         assert(height == -1);
+        if (width <= 0) {
+            qFatal("Width out of range");
+        }
         function = [&](const QString & file){
             _core->scaleImageIntoWidth(file, width);
         };
     } elif (height != -1) {
+        if (width <= 0) {
+            qFatal("Height out of range");
+        }
         function = [&](const QString & file){
             _core->scaleImageIntoHeight(file, height);
         };
@@ -245,6 +263,9 @@ void PscomEngine::convertFiles(QString format, int quality) {
 
     if (format != nullptr) {
         _core->assertFormat(format);
+    }
+    if (quality != -1 && (quality < 0 || quality > 100)) {
+        qFatal("Quality out of range: %i", quality);
     }
     processFiles([&](const QString & file){
         const auto newPath = _core->makeSuffix(file, format);
