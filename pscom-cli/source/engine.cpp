@@ -120,7 +120,8 @@ void PscomEngine::processFiles(
 ) const {
     const auto n = _files.size();
 
-    if (getVerbosityLevel() < VerbosityLevel::Info) {
+    const auto verbosityLevel = getVerbosityLevel();
+    if (verbosityLevel < VerbosityLevel::Info) {
         for (const auto file : _files) {
             function(file);
         }
@@ -128,7 +129,10 @@ void PscomEngine::processFiles(
     }
 
     int i = 0;
-    if (_app->isCerrInteractive()) {
+    if (_app->isCerrInteractive()
+        // debug outputs could conflict with progress bar
+        && verbosityLevel <= VerbosityLevel::Debug
+    ) {
         const auto shades = QString("░▒▓"); /* Inspired by
 https://github.com/James-Yu/LaTeX-Workshop/blob/
 c03ef00241944c4c481f22a5e28d440b61b2fb66/src/components/buildinfo.ts#L226 */
