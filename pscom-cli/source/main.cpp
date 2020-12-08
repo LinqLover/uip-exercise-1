@@ -405,7 +405,7 @@ int PscomApp::interactiveRequest(
         streamOut << instructionMessage << Qt::endl;
         const auto answer = streamIn.readLine();
 
-        if (answer.length() > 1) { continue; }
+        if (answer.length() != 1) { continue; }
         const auto key = answer[0];
         int index = 0;
         for (const auto answer : answers) {
