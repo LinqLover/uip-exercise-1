@@ -2,18 +2,6 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "build pscom-cli",
-			"type": "shell",
-			"command": "/bin/true",
-			"problemMatcher": [],
-			"dependsOn": [
-				"compile pscom-cli",
-				"translations for pscom-cli"
-			],
-			"group": "build",
-			"detail": "<ALL>"
-		},
-		{
 			"label": "translations for pscom-cli",
 			"type": "shell",
 			"command": "/bin/bash",
@@ -31,7 +19,7 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "compile pscom-cli",
+			"label": "build pscom-cli",
 			"type": "shell",
 			"command": "/usr/bin/make",
 			"args": [
@@ -47,7 +35,8 @@
 			"detail": "qmake",
 			"dependsOn": [
 				"make pscom-cli",
-				"build pscom"
+				"build pscom",
+				"translations for pscom-cli"
 			]
 		},
 		{
