@@ -144,7 +144,7 @@
         <translation>Skalieren: &quot;%1&quot; auf Höhe=%2</translation>
     </message>
     <message>
-        <location filename="../../source/command.cpp" line="20"/>
+        <location filename="../../source/command.cpp" line="22"/>
         <source>The operation to perform.</source>
         <translation>Die durchzuführende Operation.</translation>
     </message>
@@ -153,23 +153,23 @@
         <translation type="obsolete">Zeigt Hilfe zu Befehlszeilenoptionen an.</translation>
     </message>
     <message>
-        <location filename="../../source/command.cpp" line="42"/>
+        <location filename="../../source/command.cpp" line="44"/>
         <location filename="../../source/main.cpp" line="57"/>
         <source>Displays version information.</source>
         <translation>Zeigt Versionsinformationen an.</translation>
     </message>
     <message>
-        <location filename="../../source/command.cpp" line="92"/>
+        <location filename="../../source/command.cpp" line="94"/>
         <source>Unknown command: %1</source>
         <translation>Unbekannter Befehl: %1</translation>
     </message>
     <message>
-        <location filename="../../source/command.cpp" line="126"/>
+        <location filename="../../source/command.cpp" line="128"/>
         <source>Too many arguments</source>
         <translation>Zu viele Argumente</translation>
     </message>
     <message>
-        <location filename="../../source/command.cpp" line="165"/>
+        <location filename="../../source/command.cpp" line="167"/>
         <source>Commands:</source>
         <translation>Kommandos:</translation>
     </message>
@@ -330,7 +330,7 @@
         <translation>Fotosystem-Befehlszeilen-Tool</translation>
     </message>
     <message>
-        <location filename="../../source/command.cpp" line="31"/>
+        <location filename="../../source/command.cpp" line="33"/>
         <location filename="../../source/main.cpp" line="53"/>
         <source>Displays help on command-line options.</source>
         <translation>Zeigt Hilfe zu Befehlszeilenoptionen an.</translation>

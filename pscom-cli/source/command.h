@@ -11,6 +11,9 @@ class PscomCommand;
 
 // Subclass of QCommandLineParser that supports parsing and executing
 // PscomCommands passed as particular positional arguments.
+// Disclaimer: Because the Qt implementation hides a lot of its logic in a
+// private helper class, this class contains a lot of code copied from
+// there ...
 class PscomCommandLineParser : public QCommandLineParser {
 public:
     PscomCommandLineParser(PscomApp & app);

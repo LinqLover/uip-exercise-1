@@ -6,6 +6,8 @@
 #include "main.h"
 
 
+static QString wrapText(const QString &names, int optionNameMaxWidth, const QString &description);
+
 PscomCommandLineParser::PscomCommandLineParser(PscomApp & app) :
     QCommandLineParser::QCommandLineParser(),
     _app(&app),
@@ -179,8 +181,7 @@ QString PscomCommandLineParser::helpText() const {
                     ? "[" + placeholder + "]"
                     : placeholder);
         }
-        text += "  " + syntaxText.leftJustified(maxWidth)
-              + command.description + nl;
+        text += wrapText(syntaxText, maxWidth - 1, command.description);
     }
 
     return text;
@@ -273,4 +274,70 @@ void PscomCommand::execute(
 
 bool PscomCommand::requiresEngine(void) const {
     return _function_numArgs;
+}
+
+static QString wrapText(
+    const QString &names, int optionNameMaxWidth, const QString &description
+) {
+    const QLatin1Char nl('\n');
+    const QLatin1String indentation("  ");
+
+    // In case the list of option names is very long, wrap it as well
+    int nameIndex = 0;
+    auto nextNameSection = [&]() {
+        QString section = names.mid(nameIndex, optionNameMaxWidth);
+        nameIndex += section.size();
+        return section;
+    };
+
+    QString text;
+    int lineStart = 0;
+    int lastBreakable = -1;
+    const int max = 79 - (indentation.size() + optionNameMaxWidth + 1);
+    int x = 0;
+    const int len = description.length();
+
+    for (int i = 0; i < len; ++i) {
+        ++x;
+        const QChar c = description.at(i);
+        if (c.isSpace())
+            lastBreakable = i;
+
+        int breakAt = -1;
+        int nextLineStart = -1;
+        if (x > max && lastBreakable != -1) {
+            // time to break and we know where
+            breakAt = lastBreakable;
+            nextLineStart = lastBreakable + 1;
+        } else if ((x > max - 1 && lastBreakable == -1) || i == len - 1) {
+            // time to break but found nowhere [-> break here], or end of last
+            // line
+            breakAt = i + 1;
+            nextLineStart = breakAt;
+        } else if (c == nl) {
+            // forced break
+            breakAt = i;
+            nextLineStart = i + 1;
+        }
+
+        if (breakAt != -1) {
+            const int numChars = breakAt - lineStart;
+            text += indentation
+                + nextNameSection().leftJustified(optionNameMaxWidth)
+                + QLatin1Char(' ');
+            text += description.midRef(lineStart, numChars) + nl;
+            x = 0;
+            lastBreakable = -1;
+            lineStart = nextLineStart;
+            if (lineStart < len && description.at(lineStart).isSpace())
+                ++lineStart; // don't start a line with a space
+            i = lineStart;
+        }
+    }
+
+    while (nameIndex < names.size()) {
+        text += indentation + nextNameSection() + nl;
+    }
+
+    return text;
 }
