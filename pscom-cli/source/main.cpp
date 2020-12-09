@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     parser._showVersionCallback = std::bind(
         &PscomEngine::showVersion, PscomEngine(app, *core));
 
+    // These will be handled by the parser itself
     parser.addOptions({
         {
             QStringList{"h", "help", "?"},
@@ -57,40 +58,6 @@ int main(int argc, char *argv[])
             QObject::tr("Displays version information.")
         }
     });
-    QCommandLineOption optionVerbose(
-        QStringList{"v", "verbose"},
-        QObject::tr(
-            "Verbose mode. Specify up to %1 times to increase the verbosity "
-            "level of output messages. Opposite of quiet mode."
-        ).arg(2)
-    );
-    QCommandLineOption optionQuiet(
-        QStringList{"q", "quiet"},
-        QObject::tr(
-            "Quiet mode. Specify up to %1 times to decrease the verbosity "
-            "level of output messages. Opposite of verbose mode."
-        ).arg(2)
-    );
-    QCommandLineOption optionOnConflict(
-        QStringList{"on-conflict"},
-        QString(QObject::tr(
-            "Conflict resolution strategy to be applied when a destructive "
-            "operation is run. Can be one of the following:"
-            "\n- overwrite: Overwrite the original file irrecoverably."
-            "\n- skip: Just forget this incident and continue with the next "
-                "file."
-            "\n- backup: Create a backup of the original file (by appending "
-                "a squiggle (%1) to its file name) and then overwrite it."
-        )).arg("~"),
-        "strategy"
-    );
-    QCommandLineOption optionForce(
-        QStringList{"f", "force"},
-        QString(QObject::tr(
-            "Enforce possibly destructive operations regardless of the "
-            "consequences. Equivalent to %1=%2.")
-        ).arg(optionOnConflict.names().last()).arg("overwrite")
-    );
     QCommandLineOption optionSupportedFormats(
         QStringList{"supported-formats"},
         QObject::tr("Display all supported image formats.")
@@ -127,6 +94,40 @@ int main(int argc, char *argv[])
             "Reject images newer than the given date and time. NOTE: If you "
             "only specify the date, it will be treated as midnight time."),
         "date"
+    );
+    QCommandLineOption optionVerbose(
+        QStringList{"v", "verbose"},
+        QObject::tr(
+            "Verbose mode. Specify up to %1 times to increase the verbosity "
+            "level of output messages. Opposite of quiet mode."
+        ).arg(2)
+    );
+    QCommandLineOption optionQuiet(
+        QStringList{"q", "quiet"},
+        QObject::tr(
+            "Quiet mode. Specify up to %1 times to decrease the verbosity "
+            "level of output messages. Opposite of verbose mode."
+        ).arg(2)
+    );
+    QCommandLineOption optionOnConflict(
+        QStringList{"on-conflict"},
+        QString(QObject::tr(
+            "Conflict resolution strategy to be applied when a destructive "
+            "operation is run. Can be one of the following:"
+            "\n- overwrite: Overwrite the original file irrecoverably."
+            "\n- skip: Just forget this incident and continue with the next "
+                "file."
+            "\n- backup: Create a backup of the original file (by appending "
+                "a squiggle (%1) to its file name) and then overwrite it."
+        )).arg("~"),
+        "strategy"
+    );
+    QCommandLineOption optionForce(
+        QStringList{"f", "force"},
+        QString(QObject::tr(
+            "Enforce possibly destructive operations regardless of the "
+            "consequences. Equivalent to %1=%2.")
+        ).arg(optionOnConflict.names().last()).arg("overwrite")
     );
     QCommandLineOption optionDryRun(
         QStringList{"dry-run"},
