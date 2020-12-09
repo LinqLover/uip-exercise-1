@@ -15,7 +15,7 @@ QStringList intersection(const QList<QStringList> &vecs) {
     return last_intersection;
 }
 
-// TODO: Support more types (reinvention of qdebug)
+// Reinvention of qDebug()'s logic.
 QString variantToString(const QVariant variant) {
     if (variant.userType() == QMetaType::QString) {
         return '"' + variant.toString() + '"';

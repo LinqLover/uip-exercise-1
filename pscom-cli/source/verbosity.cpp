@@ -77,7 +77,6 @@ void VerbosityHandler(
     auto stream = QTextStream(stderr);
     QString color = nullptr;
 
-    // TODO: Use color
     switch (type) {
         case QtDebugMsg:
             if (verbosityLevel < VerbosityLevel::Debug) {

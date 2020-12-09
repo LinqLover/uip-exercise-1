@@ -25,14 +25,6 @@
 #include "verbosity.h"
 
 
-/* PLEASE NOTE
- * - be careful using the pscom library, it may irreversible delete actual data if used without care.
- * - try to rely on pscom library exclusively in order to fulfill the user stories / tasks.
- * - use qt only to drive the library and control command language aspects and CLI related features, e.g.,
- *   progress, logging, verbosity, undo, help, etc.
- * - prefer qDebug, qInfo, qWarning, qCritical, and qFatal for verbosity and console output.
- */
-
 #define EXIT_MISUSE 2
 
 
