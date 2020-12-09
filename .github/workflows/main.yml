@@ -8,6 +8,12 @@ jobs:
       options: --user root
     steps:
     - uses: actions/checkout@v1
+
+    # Let's do this at the very beginning before any build artifacts could
+    # pollute the submission ...
+    - name: Create submission
+      run: zip pscom-cli.zip -r pscom-cli/
+
     - name: Build pscom
       working-directory: ./pscom
       run: |
@@ -25,3 +31,21 @@ jobs:
       run: |
         ./pscom-cli/bin/pscom-cli version
         ./pscom-cli/bin/pscom-cli help
+
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+    - name: Upload submission
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./pscom-cli.zip
+        asset_name: pscom-cli.zip
+        asset_content_type: application/zip
