@@ -5,55 +5,78 @@ Application skeleton was provided by the chair for Computer Graphical Systems at
 ## Command Line Interface
 
 ```
-Usage: pscom-cli <command> <filter>* [-C <directory or `-'>] [--yes]
+sage: ./pscom-cli/bin/pscom-clid [options] command
+Photo system command-line tool
 
-Defaults:
-  <directory or `-'> - $(pwd)
+Options:
+  -h, --help, -?              Displays help on command-line options.
+  -V, --version               Displays version information.
+  -v, --verbose               Verbose mode. Specify up to 2 times to increase
+                              the verbosity level of output messages. Opposite
+                              of quiet mode.
+  -q, --quiet                 Quiet mode. Specify up to 2 times to decrease the
+                              verbosity level of output messages. Opposite of
+                              verbose mode.
+  --on-conflict <strategy>    Conflict resolution strategy to be applied when a
+                              destructive operation is run. Can be one of the
+                              following:
+                              - overwrite: Overwrite the original file
+                              irrecoverably.
+                              - skip: Just forget this incident and continue
+                              with the next file.
+                              - backup: Create a backup of the original file (by
+                              appending a squiggle (~) to its file name) and
+                              then overwrite it.
+  -f, --force                 Enforce possibly destructive operations
+                              regardless of the consequences. Equivalent to
+                              on-conflict=overwrite.
+  --supported-formats         Display all supported image formats.
+  -d, -C, --directory <path>  The directory to look up image files. Pass a
+                              single dash (-) to enter a list of image files
+                              interactively.
+  -R, --recursive             Include subdirectories.
+  -r, --regex <pattern>       A regular expression to filter image files. Does
+                              not need to match the entire file name; use text
+                              anchors (^ $) for full matches.
+  --min, --min-date <date>    Reject images older than the given date and time.
+  --max, --max-date <date>    Reject images newer than the given date and time.
+                              NOTE: If you only specify the date, it will be
+                              treated as midnight time.
+  --dry-run                   Only simulate all modifications to the filesystem
+                              instead of actually applying them. Can be helpful
+                              to understand the consequences of your complicated
+                              invocation without hazarding your entire photo
+                              library.
+  --width <number>            The width the images should be fit into.
+  --height <number>           The height the images should be fit into.
+  --format <extension>        The file format (e.g. jpg or png) the images
+                              should be converted into.
+  --quality <value>           The quality for image conversion. Value between 0
+                              (best compression) and 100 (best quality).
+
+Arguments:
+  command                     The operation to perform.
 
 Commands:
-  help - print this help
-  version - print version
-  supported-formats - print supported formats
-  list - only show files
-  copy <dest> - copy files into destination
-  move <dest> - move files into destination
-  rename [<scheme>] - rename images
-    <scheme> defaults to UPA file name standard `yyyyMMdd_HHmmsszzz'
-  group [<scheme>] - group images
-    <scheme> defaults to UPA directory name standard `yyyy/yyyy-MM'
-  group-static <name> - group images using static name
-  rescale - rescale images
-    options (at least one required):
-      --width=<width>
-      --height=<height>
-  convert - convert images
-    options (all required):
-      --format=<format>
-      --quality=<quality>
-
-Filters:
-  --re, --regex <pattern> - regular expression
-  --mi, min-date -- minimum date
-  --ma, max-date -- maximum date
+  pscom <symbol> <arguments>  Execute a symbol from the pscom library manually.
+                              No safety checks! Intended for debugging purposes
+                              only.
+  list, ls                    Display image files.
+  copy, cp <destination>      Copy image files into the specified destination
+                              folder.
+  move, mv <destination>      Move image files into the specified destination
+                              folder.
+  rename, rn [<schema>]       Rename image files according to the given schema,
+                              or according to the UPA standard, if omitted. To
+                              escape date specifiers in the schema, enclose
+                              literal parts into single quotes (', or "'" from
+                              the bash shell).
+  group, g [<schema>]         Group image files into subdirectories according
+                              to the given schema, or according to the UPA
+                              standard, if omitted. To escape date specifiers in
+                              the schema, enclose literal parts into single
+                              quotes (', or "'" from the bash shell).
+  resize                      Resize image files into the given dimensions.
+  convert                     Convert image files into a different file format
+                              and/or quality.
 ```
-
-Pattern: &lt;example command&gt; \[&lt;relevant methods from `pscom.h`&gt;\]
-
-- **Find images:** `pscom-cli list` [`re`, `dt`]
-  * by time filter: `pscom-cli list --before=2017-04-17 --after=2017-02-08`
-  * by regex: `pscom-cli list --regex='car[it]'`
-    + TODO: Should regex be full patterns always? API says yes, but we could circumvent.
-- **Copy or move images:** [`cp`, `mv`]
-  * copy: `pscom-cli copy <target> <filter>`
-  * move: `pscom-cli move <target> <filter>`
-- **Rename images by scheme:** [`fn`/`fp`?, `mv`]
-  * UPA scheme: `pscom-cli rename`
-  * custom scheme: `pscom-cli rename --scheme=<scheme>`
-- **Group images by scheme:** [`fp`?, `mv`]
-  * UPA scheme: `pscom-cli group`
-  * custom scheme: `pscom-cli group --scheme=<scheme>`
-  * single group: `pscom-cli group-single --name=<name>`
-- **Scale down images:** [`sw`, `sh`, `ss`]
-  * `pscom-cli rescale --width=<width> --height=<height>`
-- **Convert images into different format or quality:** \[`cf`\]
-  * `pscom-cli convert --format=<format> --quality=<quality>`
