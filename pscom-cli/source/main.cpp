@@ -317,6 +317,7 @@ int main(int argc, char *argv[])
         verbosityLevel -= parser.countSet(optionQuiet);
         setVerbosityLevel(static_cast<VerbosityLevel>(verbosityLevel));
     }
+    setInteractive(app.isCerrInteractive());
 
     if (parser.isSet(optionDryRun)) {
         std::function<QTextStream(void)> x = std::bind(&PscomApp::cout, &app);
@@ -445,6 +446,9 @@ int PscomApp::interactiveRequest(
     auto
         streamOut = cerr(),
         streamIn = cin();
+    if (isCerrInteractive()) {
+        streamOut << "\033[1;3m"; // bold + italic
+    }
     streamOut << message << Qt::endl;
     while (true) {
         streamOut << instructionMessage << Qt::endl;
@@ -456,6 +460,9 @@ int PscomApp::interactiveRequest(
         for (const auto answer : answers) {
             index++;
             if (answer.first == key) {
+                if (isCerrInteractive()) {
+                    streamOut << "\033[0m"; // reset font
+                }
                 return index;
             }
         }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
-<!-- Translations powered by DeepL :-) -->
 <context>
     <name>QObject</name>
     <message>
@@ -475,7 +474,7 @@
         <translation>Die Optionen %1 und %2 können nicht kombiniert werden.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="337"/>
+        <location filename="../../source/main.cpp" line="338"/>
         <source>Unknown {1} strategy: {2}</source>
         <translation>Unbekannte {1}-Strategie: {2}</translation>
     </message>
@@ -490,7 +489,7 @@ In: %1:%2 in function %3
 </translation>
     </message>
     <message>
-        <location filename="../../source/verbosity.cpp" line="35"/>
+        <location filename="../../source/verbosity.cpp" line="43"/>
         <source>
 In: %1:%2 in function %3
   Backtrace:

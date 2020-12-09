@@ -11,7 +11,8 @@ enum VerbosityLevel {
     Trace
 };
 
-VerbosityLevel getVerbosityLevel();
+void setInteractive(bool interactive = true);
+VerbosityLevel getVerbosityLevel(void);
 void setVerbosityLevel(VerbosityLevel);
 
 /**
