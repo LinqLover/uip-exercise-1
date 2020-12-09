@@ -357,7 +357,7 @@ bool PscomEngine::confirmOverwrite(const QString & path) {
     }
 
     switch (getFileExistsReaction(
-        QObject::tr("This will overwrite the file: \"%1\". Proceed?"), path)
+        QObject::tr("This will overwrite the file: \"%1\"."), path)
     ) {
         case FileExistsReaction::Skip:
             return false;

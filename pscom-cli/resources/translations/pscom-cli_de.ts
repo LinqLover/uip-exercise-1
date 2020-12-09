@@ -287,8 +287,8 @@
     </message>
     <message>
         <location filename="../../source/engine.cpp" line="360"/>
-        <source>This will overwrite the file: &quot;%1&quot;. Proceed?</source>
-        <translation>Dadurch wird die Datei überschrieben: &quot;%1&quot;. Fortfahren?</translation>
+        <source>This will overwrite the file: &quot;%1&quot;.</source>
+        <translation>Dadurch wird die Datei überschrieben: &quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="../../source/engine.cpp" line="384"/>
