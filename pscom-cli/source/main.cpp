@@ -289,6 +289,7 @@ int main(int argc, char *argv[])
         qFatal("%s", utf8.constData());
     }
 
+    // Inspired by the ssh tool interface.
     if (parser.isSet(optionVerbose) || parser.isSet(optionQuiet)) {
         auto verbosityLevel = static_cast<int>(VerbosityLevel::Info);
         verbosityLevel += parser.countSet(optionVerbose);
