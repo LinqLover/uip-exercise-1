@@ -7,29 +7,12 @@
 #include "support.h"
 
 
-#define PSCOM pscom
-
-#define COMMA() ,
-#define EMPTY()
-#define _INIT_ARG(I, X, C) auto arg ## I = (X);
-#define _PRN_ARG(I, X, C) arg ## I C()
-#define _STRM_ARG(I, X, C) << arg ## I C
-#define _PSCOM(SYMBOL, ...) [&](){ \
-    _FOR_EACH(_INIT_ARG, , , ##__VA_ARGS__); \
-    qDebug().nospace() << STRINGIFY(PSCOM) "::" #SYMBOL << "(" _FOR_EACH( \
-        _STRM_ARG, << ", ", , ##__VA_ARGS__ \
-    ) << ")"; \
-    return PSCOM::SYMBOL( \
-        _FOR_EACH(_PRN_ARG, COMMA, EMPTY, ##__VA_ARGS__)); \
-}()
-
-
-// Developer interface not needoing translation
 void PscomAdapter::pscom(
     const QList<QString> & arguments,
     int argOffset,
     QTextStream & outputStream
 ) const {
+    // Developer interface that does not need translation
     auto argCounter = argOffset;
     if (argCounter >= arguments.length()) {
         qFatal("usage: %s <symbol> <argument>*", STRINGIFY(PSCOM));
@@ -37,6 +20,22 @@ void PscomAdapter::pscom(
     const auto symbol = arguments[argCounter++];
 
 {// INSANE_MACRO_MAGIC_TO_COMPENSATE_THE_ABSENCE_OF_REFLECTION_IN_CPP_AAAH
+    #define PSCOM pscom
+
+    #define COMMA() ,
+    #define EMPTY()
+    #define _INIT_ARG(I, X, C) auto arg ## I = (X);
+    #define _PRN_ARG(I, X, C) arg ## I C()
+    #define _STRM_ARG(I, X, C) << arg ## I C
+    #define _PSCOM(SYMBOL, ...) [&](){ \
+        _FOR_EACH(_INIT_ARG, , , ##__VA_ARGS__); \
+        qDebug().nospace() << STRINGIFY(PSCOM) "::" #SYMBOL << "(" _FOR_EACH( \
+            _STRM_ARG, << ", ", , ##__VA_ARGS__ \
+        ) << ")"; \
+        return PSCOM::SYMBOL( \
+            _FOR_EACH(_PRN_ARG, COMMA, EMPTY, ##__VA_ARGS__)); \
+    }()
+
     #define ASSERT_ARGC(NUMBER) \
         if (arguments.length() - 1 - argOffset != NUMBER) { \
         qFatal("Invalid number of arguments (expected %i, but got %i)", \

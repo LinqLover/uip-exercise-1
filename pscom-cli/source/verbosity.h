@@ -1,4 +1,5 @@
 #pragma once
+// Logging module.
 
 #include <qlogging.h>
 
@@ -17,6 +18,8 @@ void setVerbosityLevel(VerbosityLevel);
 
 /**
  * @brief VerbosityHandler - http://doc.qt.io/qt-5/qtglobal.html#qInstallMessageHandler
- * ToDo: perhaps use this approach to format console output and handle ouput verbosity...
  */
-void VerbosityHandler(QtMsgType type, const QMessageLogContext & context, const QString & message);
+void VerbosityHandler(
+    QtMsgType type,
+    const QMessageLogContext & context,
+    const QString & message);

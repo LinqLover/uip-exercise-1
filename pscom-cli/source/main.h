@@ -5,6 +5,11 @@
 #include <QTextStream>
 
 
+// Our very special QCoreApplication specialization. Motivation includes:
+// - Shorter to type
+// - A bit flair of OOP without wasting the architecture with too many roles
+// - Store I/O related logic near to the QApplication stuff.
+// Singleton (or at least meant to be one).
 class PscomApp : public QCoreApplication
 {
 public:

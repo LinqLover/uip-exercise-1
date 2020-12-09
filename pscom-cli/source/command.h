@@ -9,12 +9,9 @@
 class PscomCommand;
 
 
+// Subclass of QCommandLineParser that supports parsing and executing
+// PscomCommands passed as particular positional arguments.
 class PscomCommandLineParser : public QCommandLineParser {
-private:
-    PscomApp *_app;
-    QList<PscomCommand> _commands;
-    PscomCommand *_command = nullptr;
-    QStringList _commandArguments;
 public:
     PscomCommandLineParser(PscomApp & app);
     std::function<void(void)> _showVersionCallback;
@@ -33,9 +30,17 @@ public:
     QString helpText(void) const;
     void showHelp(int exitCode) const;
     void showVersion(void) const;
+private:
+    PscomApp *_app;
+    QList<PscomCommand> _commands;
+    PscomCommand *_command = nullptr;
+    QStringList _commandArguments;
 };
 
 
+// Represents a command line argument that is passed as a positional parameter
+// to a CLI application. Kind of similar to QCommandLineOption, but commands
+// are not optional nor can have arguments themselves.
 class PscomCommand {
 private:
     PscomCommand(
@@ -44,6 +49,11 @@ private:
         const QString & description,
         const QStringList & defaultValues = QStringList());
 
+    // Sigh ... Because C++ does not support late binding, reflection or any
+    // other cool stuff, we need to maintain the different signatured function
+    // pointers separately. It might be possible to use a union type to save a
+    // few bits, but this does not seems very important.
+    // (In Smalltalk, I would simply have sent #cull:cull: to the function 😛)
     int _function_numArgs;
     std::function<void(void)> _function_p0;
     std::function<void(PscomEngine &)> _function_p1;

@@ -6,6 +6,8 @@
 #include <QTextStream>
 
 
+// Abstract interface for the pscom library. Provides a consistent and
+// comprehensible protocol for all library functions.
 class IPscomCore {
 public:
     virtual const QString version(void) const = 0;
@@ -60,8 +62,16 @@ public:
         const QString & path, int height) const = 0;
 };
 
+// Concrete implementation of IPscomCore for the given pscom library.
+// Adds safety checks to all unsafe operations and weeds out the worst
+// carvers from the library.
+// Note: The safety checks in this class are not intended to be reached by the
+// client code! Rather, clients should make these checks manually in order to
+// provide interactivity when an edge case is encountered.
 class PscomAdapter : public IPscomCore {
 public:
+    // Provides direct and unmanaged access to the pscom library. Intended for
+    // debugging purposes only. No safety checks! Don't use in production!
     void pscom(
         const QList<QString> & arguments,
         int argOffset,
@@ -120,13 +130,12 @@ private:
     bool supportsFormat(const QString & format) const;
 };
 
-// Decorator. Hm ... decorators in Smalltalk are more funny.
+// Decorator for IPscomCore that simulates all final actions instead of
+// actually running them. In theory, we could also maintain some kind of mock
+// file system here, but not today. 😉
+// Hm ... decorators in Smalltalk are more funny. Why can C# not simply have
+// a #doesNotUnderstand? 😩
 class PscomSimulator : public IPscomCore {
-private:
-    IPscomCore *_core;
-    std::function<QTextStream(void)> _stream;
-
-    void log(const QString & message) const;
 public:
     PscomSimulator(
         IPscomCore & core,
@@ -177,4 +186,9 @@ public:
     void scaleImage(const QString & path, int width, int height) const;
     void scaleImageIntoWidth(const QString & path, int width) const;
     void scaleImageIntoHeight(const QString & path, int height) const;
+private:
+    IPscomCore *_core;
+    std::function<QTextStream(void)> _stream;
+
+    void log(const QString & message) const;
 };

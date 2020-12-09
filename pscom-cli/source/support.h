@@ -1,4 +1,5 @@
 #pragma once
+// Provides several helper functions and macros.
 
 #include <QTextStream>
 

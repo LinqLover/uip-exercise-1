@@ -4,142 +4,142 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../source/adapter.cpp" line="89"/>
+        <location filename="../../source/adapter.cpp" line="88"/>
         <source>%1: Unknown symbol: %2</source>
         <translation>%1: Unbekanntes Symbol: %2</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="115"/>
+        <location filename="../../source/adapter.cpp" line="114"/>
         <source>Could not copy file: &quot;%1&quot; to: &quot;%2&quot;</source>
         <translation>Konnte Datei nicht kopieren: &quot;%1&quot; nach: &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="126"/>
+        <location filename="../../source/adapter.cpp" line="125"/>
         <source>Could not create directory: &quot;%1&quot;</source>
         <translation>Konnte kein Verzeichnis erstellen: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="204"/>
+        <location filename="../../source/adapter.cpp" line="203"/>
         <source>Could not move file: &quot;%1&quot; to: &quot;%2&quot;</source>
         <translation>Konnte die Datei nicht verschieben: &quot;%1&quot; nach: &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="224"/>
+        <location filename="../../source/adapter.cpp" line="223"/>
         <source>Cannot remove non-file path: %1</source>
         <translation>Nicht-Dateipfad kann nicht entfernt werden: %1</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="232"/>
+        <location filename="../../source/adapter.cpp" line="231"/>
         <source>Could not remove file: %1</source>
         <translation>Konnte die Datei nicht entfernen: %s</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="268"/>
+        <location filename="../../source/adapter.cpp" line="267"/>
         <location filename="../../source/engine.cpp" line="313"/>
         <source>Quality out of range: %1</source>
         <translation>Qualität außerhalb des zulässigen Bereichs: %1</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="276"/>
+        <location filename="../../source/adapter.cpp" line="275"/>
         <source>Could not convert file: %1</source>
         <translation>Konnte Datei nicht konvertieren: %s</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="287"/>
-        <location filename="../../source/adapter.cpp" line="312"/>
+        <location filename="../../source/adapter.cpp" line="286"/>
+        <location filename="../../source/adapter.cpp" line="311"/>
         <source>Width out of range: %1</source>
         <translation>Breite außerhalb des zulässigen Bereichs: %1</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="293"/>
-        <location filename="../../source/adapter.cpp" line="331"/>
+        <location filename="../../source/adapter.cpp" line="292"/>
+        <location filename="../../source/adapter.cpp" line="330"/>
         <source>Height out of range: %1</source>
         <translation>Höhe außerhalb des zulässigen Bereichs: %1</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="301"/>
-        <location filename="../../source/adapter.cpp" line="320"/>
-        <location filename="../../source/adapter.cpp" line="339"/>
+        <location filename="../../source/adapter.cpp" line="300"/>
+        <location filename="../../source/adapter.cpp" line="319"/>
+        <location filename="../../source/adapter.cpp" line="338"/>
         <source>Could not resize file: %1</source>
         <translation>Konnte die Größe der Datei nicht ändern: %1</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="348"/>
+        <location filename="../../source/adapter.cpp" line="347"/>
         <source>Path does not exist: &quot;%1&quot;</source>
         <translation>Pfad existiert nicht: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="358"/>
+        <location filename="../../source/adapter.cpp" line="357"/>
         <source>Directory does not exist: &quot;%1&quot;</source>
         <translation>Verzeichnis existiert nicht: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="368"/>
+        <location filename="../../source/adapter.cpp" line="367"/>
         <source>File does not exist: &quot;%1&quot;</source>
         <translation>Datei existiert nicht: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="377"/>
+        <location filename="../../source/adapter.cpp" line="376"/>
         <source>File format not supported: &quot;%1&quot;</source>
         <translation>Dateiformat wird nicht unterstützt: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="386"/>
+        <location filename="../../source/adapter.cpp" line="385"/>
         <source>Image format not supported: &quot;%1&quot;</source>
         <translation>Bildformat wird nicht unterstützt: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="395"/>
+        <location filename="../../source/adapter.cpp" line="394"/>
         <source>File aready exists: &quot;%1&quot;</source>
         <translation>Datei ist bereits vorhanden: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="430"/>
+        <location filename="../../source/adapter.cpp" line="429"/>
         <source>copy &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Kopieren: &quot; %1&quot; nach &quot; %2</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="434"/>
+        <location filename="../../source/adapter.cpp" line="433"/>
         <source>create directory for &quot;%1&quot;</source>
         <translation>Verzeichnis erstellen: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="498"/>
+        <location filename="../../source/adapter.cpp" line="497"/>
         <source>move &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Verschieben: &quot; %1&quot; nach &quot;%2</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="506"/>
+        <location filename="../../source/adapter.cpp" line="505"/>
         <source>remove &quot;%1&quot;</source>
         <translation>Löschen: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="517"/>
+        <location filename="../../source/adapter.cpp" line="516"/>
         <source>convert &quot;%%1&quot;</source>
         <translation>Konvertieren: &quot;%%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="519"/>
+        <location filename="../../source/adapter.cpp" line="518"/>
         <source> to %1</source>
         <translation> nach %1</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="522"/>
+        <location filename="../../source/adapter.cpp" line="521"/>
         <source> to quality=%1</source>
         <translation> mit Qualität=%1</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="541"/>
+        <location filename="../../source/adapter.cpp" line="540"/>
         <source>scale &quot;%1&quot; to %2x%3</source>
         <translation>Skalieren: &quot;%1&quot; auf %2x%3</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="548"/>
+        <location filename="../../source/adapter.cpp" line="547"/>
         <source>scale &quot;%1&quot; to width=%2</source>
         <translation>Skalieren: &quot;%1&quot; auf Breite=%2</translation>
     </message>
     <message>
-        <location filename="../../source/adapter.cpp" line="554"/>
+        <location filename="../../source/adapter.cpp" line="553"/>
         <source>scale &quot;%1&quot; to height=%2</source>
         <translation>Skalieren: &quot;%1&quot; auf Höhe=%2</translation>
     </message>

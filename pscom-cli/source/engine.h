@@ -20,29 +20,9 @@ enum FileExistsReaction {
     Backup
 };
 
+// Engine object for pscom-cli that provides all main file operations and
+// maintains all state that is relevant during the execution.
 class PscomEngine {
-private:
-    PscomApp *_app;
-    IPscomCore *_core;
-    QStringList _files;
-
-    bool copyFile(const QString & oldPath, const QString & newPath);
-    bool moveFile(const QString & oldPath, const QString & newPath);
-    bool confirmOverwrite(const QString & path);
-    bool denyExists(const QString & path);
-    FileExistsReaction getFileExistsReaction(
-        const QString & message,
-        const QString & path);
-    void processFiles(
-        std::function<bool(const QString &)> function,
-        const QString & completeMessage = nullptr) const;
-    const QStringList readFileList(QTextStream stream) const;
-    const QStringList searchFiles(
-        const QString & directory,
-        bool recursive,
-        const std::optional<QDateTime> & dateMin,
-        const std::optional<QDateTime> & dateMax,
-        const QRegExp & regex) const;
 public:
     PscomEngine(PscomApp & app, IPscomCore & core);
 
@@ -65,4 +45,26 @@ public:
         const std::optional<QDateTime> & dateMin = std::nullopt,
         const std::optional<QDateTime> & dateMax = std::nullopt,
         const QRegExp & regex = QRegExp());
+private:
+    PscomApp *_app;
+    IPscomCore *_core;
+    QStringList _files;
+
+    bool copyFile(const QString & oldPath, const QString & newPath);
+    bool moveFile(const QString & oldPath, const QString & newPath);
+    bool confirmOverwrite(const QString & path);
+    bool denyExists(const QString & path);
+    FileExistsReaction getFileExistsReaction(
+        const QString & message,
+        const QString & path);
+    void processFiles(
+        std::function<bool(const QString &)> function,
+        const QString & completeMessage = nullptr) const;
+    const QStringList readFileList(QTextStream stream) const;
+    const QStringList searchFiles(
+        const QString & directory,
+        bool recursive,
+        const std::optional<QDateTime> & dateMin,
+        const std::optional<QDateTime> & dateMax,
+        const QRegExp & regex) const;
 };
