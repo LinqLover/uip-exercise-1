@@ -154,7 +154,7 @@
     </message>
     <message>
         <location filename="../../source/command.cpp" line="42"/>
-        <location filename="../../source/main.cpp" line="79"/>
+        <location filename="../../source/main.cpp" line="65"/>
         <source>Displays version information.</source>
         <translation>Zeigt Versionsinformationen an.</translation>
     </message>
@@ -325,28 +325,28 @@
         <translation>Alle sichern</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="68"/>
+        <location filename="../../source/main.cpp" line="54"/>
         <source>Photo system command-line tool</source>
         <translation>Fotosystem-Befehlszeilen-Tool</translation>
     </message>
     <message>
         <location filename="../../source/command.cpp" line="31"/>
-        <location filename="../../source/main.cpp" line="75"/>
+        <location filename="../../source/main.cpp" line="61"/>
         <source>Displays help on command-line options.</source>
         <translation>Zeigt Hilfe zu Befehlszeilenoptionen an.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="84"/>
+        <location filename="../../source/main.cpp" line="70"/>
         <source>Verbose mode. Specify up to %1 times to increase the verbosity level of output messages. Opposite of quiet mode.</source>
         <translation>Verboser Modus. Geben Sie diese Option bis zu %1 Mal an, um den Verbositätsgrad der ausgegebenen Nachrichten zu erhöhen. Das Gegenteil des stillen Modus.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="91"/>
+        <location filename="../../source/main.cpp" line="77"/>
         <source>Quiet mode. Specify up to %1 times to decrease the verbosity level of output messages. Opposite of verbose mode.</source>
         <translation>Stiller Modus. Geben Sie diese Option bis zu %1 Mal an, um den Verbositätsgrad der ausgegebenen Nachrichten zu verringern. Das Gegenteil des verbosen Modus.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="98"/>
+        <location filename="../../source/main.cpp" line="84"/>
         <source>Conflict resolution strategy to be applied when a destructive operation is run. Can be one of the following:
 - overwrite: Overwrite the original file irrecoverably.
 - skip: Just forget this incident and continue with the next file.
@@ -357,124 +357,124 @@
 - sichern: Ein Backup der Originaldatei erstellen (durch Anhängen einer Tilde (%1) an den Dateinamen) und diese dann überschreiben.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="111"/>
+        <location filename="../../source/main.cpp" line="97"/>
         <source>Enforce possibly destructive operations regardless of the consequences. Equivalent to %1=%2.</source>
         <translation>Möglicherweise destruktive Operationen ohne Rücksicht auf die Konsequenzen durchführen. Gleichwertig zu %1=%2.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="118"/>
+        <location filename="../../source/main.cpp" line="104"/>
         <source>Display all supported image formats.</source>
         <translation>Alle unterstützten Bildformate anzeigen.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="122"/>
+        <location filename="../../source/main.cpp" line="108"/>
         <source>The directory to look up image files. Pass a single dash (%1) to enter a list of image files interactively.</source>
         <translation>Das Verzeichnis zum Suchen von Bilddateien. Übergeben Sie einen einzigen Bindestrich (%1), um eine Liste von Bilddateien interaktiv einzugeben.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="130"/>
+        <location filename="../../source/main.cpp" line="116"/>
         <source>Include subdirectories.</source>
         <translation>Unterverzeichnisse in die Suche einbeziehen.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="134"/>
+        <location filename="../../source/main.cpp" line="120"/>
         <source>A regular expression to filter image files. Does not need to match the entire file name; use text anchors (%1) for full matches.</source>
         <translation>Ein regulärer Ausdruck zum Filtern von Bilddateien. Muss nicht mit dem gesamten Dateinamen übereinstimmen; verwenden Sie Textanker (%1) für vollständige Übereinstimmungen.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="143"/>
+        <location filename="../../source/main.cpp" line="129"/>
         <source>Reject images older than the given date and time.</source>
         <translation>Bilder ablehnen, die älter als das angegebene Datum und die angegebene Uhrzeit sind.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="148"/>
+        <location filename="../../source/main.cpp" line="134"/>
         <source>Reject images newer than the given date and time. NOTE: If you only specify the date, it will be treated as midnight time.</source>
         <translation>Bilder, die jünger als das angegebene Datum und die angegebene Uhrzeit sind, werden zurückgewiesen. HINWEIS: Wenn Sie nur das Datum angeben, wird es als Mitternachtszeit behandelt.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="155"/>
+        <location filename="../../source/main.cpp" line="141"/>
         <source>Only simulate all modifications to the filesystem instead of actually applying them. Can be helpful to understand the consequences of your complicated invocation without hazarding your entire photo library.</source>
         <translation>Alle Änderungen am Dateisystem nur simulieren, anstatt sie tatsächlich anzuwenden. Kann hilfreich sein, um die Folgen Ihres komplizierten Aufrufs zu verstehen, ohne Ihre gesamte Fotobibliothek zu gefährden.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="163"/>
+        <location filename="../../source/main.cpp" line="149"/>
         <source>The width the images should be fit into.</source>
         <translation>Die Breite, in die die Bilder eingepasst werden sollen.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="168"/>
+        <location filename="../../source/main.cpp" line="154"/>
         <source>The height the images should be fit into.</source>
         <translation>Die Höhe, in die die Bilder eingepasst werden sollen.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="173"/>
+        <location filename="../../source/main.cpp" line="159"/>
         <source>The file format (e.g. %1 or %2) the images should be converted into.</source>
         <translation>Das Dateiformat (z.B. %1 oder %2), in das die Bilder konvertiert werden sollen.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="181"/>
+        <location filename="../../source/main.cpp" line="167"/>
         <source>The quality for image conversion. Value between %1 (best compression) and %2 (best quality).</source>
         <translation>Die Qualität für die Bildkonvertierung. Wert zwischen %1 (beste Komprimierung) und %2 (beste Qualität).</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="204"/>
+        <location filename="../../source/main.cpp" line="190"/>
         <source>Execute a symbol from the pscom library manually. No safety checks! Intended for debugging purposes only.</source>
         <translation>Führen Sie ein Symbol aus der pscom-Bibliothek manuell aus. Keine Sicherheitsüberprüfungen! Nur für Debugging-Zwecke vorgesehen.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="211"/>
+        <location filename="../../source/main.cpp" line="197"/>
         <source>Display image files.</source>
         <translation>Bilddateien anzeigen.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="216"/>
+        <location filename="../../source/main.cpp" line="202"/>
         <source>Copy image files into the specified destination folder.</source>
         <translation>Bilddateien in den angegebenen Zielordner kopieren.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="221"/>
+        <location filename="../../source/main.cpp" line="207"/>
         <source>Move image files into the specified destination folder.</source>
         <translation>Bilddateien in den angegebenen Zielordner verschieben.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="223"/>
+        <location filename="../../source/main.cpp" line="209"/>
         <source>To escape date specifiers in the schema, enclose literal parts into single quotes (%1, or %2 from the bash shell).</source>
         <translation>Um Datumsangaben im Schema zu umgehen, schließen Sie literale Teile in einfache Anführungszeichen ein (%1 oder %2 in der Bash-Shell).</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="230"/>
+        <location filename="../../source/main.cpp" line="216"/>
         <source>Rename image files according to the given schema, or according to the UPA standard, if omitted. </source>
         <translation>Bilddateien umbenennen gemäß dem angegebenen Schema oder, falls weggelassen, gemäß dem UPA-Standard. </translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="239"/>
+        <location filename="../../source/main.cpp" line="225"/>
         <source>Group image files into subdirectories according to the given schema, or according to the UPA standard, if omitted. </source>
         <translation>Bilddateien gruppieren und in Unterverzeichnisse gemäß dem angegebenen Schema oder, falls nicht angegeben, gemäß dem UPA-Standard umbenennen. </translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="248"/>
+        <location filename="../../source/main.cpp" line="234"/>
         <source>Resize image files into the given dimensions.</source>
         <translation>Bilddateien auf die angegebenen Dimensionen skalieren.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="255"/>
-        <location filename="../../source/main.cpp" line="264"/>
-        <location filename="../../source/main.cpp" line="286"/>
+        <location filename="../../source/main.cpp" line="241"/>
+        <location filename="../../source/main.cpp" line="250"/>
+        <location filename="../../source/main.cpp" line="272"/>
         <source>%1: Invalid number was specified</source>
         <translation>%1: Es wurde eine ungültige Zahl angegeben</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="274"/>
+        <location filename="../../source/main.cpp" line="260"/>
         <source>Convert image files into a different file format and/or quality.</source>
         <translation>Bilddateien in ein anderes Dateiformat und/oder eine andere Qualität konvertieren.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="307"/>
+        <location filename="../../source/main.cpp" line="293"/>
         <source>Cannot combine options %1 and %2</source>
         <translation>Die Optionen %1 und %2 können nicht kombiniert werden.</translation>
     </message>
     <message>
-        <location filename="../../source/main.cpp" line="338"/>
+        <location filename="../../source/main.cpp" line="324"/>
         <source>Unknown {1} strategy: {2}</source>
         <translation>Unbekannte {1}-Strategie: {2}</translation>
     </message>

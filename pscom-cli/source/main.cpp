@@ -36,6 +36,8 @@
 #define EXIT_MISUSE 2
 
 
+void setupTranslators(PscomApp & app);
+
 int main(int argc, char *argv[])
 {
     qInstallMessageHandler(VerbosityHandler);
@@ -44,23 +46,7 @@ int main(int argc, char *argv[])
     // QCoreApplication::setApplicationName("pscom-cli");
     QCoreApplication::setApplicationVersion("3.0.0");
     auto app = PscomApp(argc, argv);
-    QTranslator qtTranslator;
-    if (!qtTranslator.load(
-        QLocale(), "qt", "_",
-        QLibraryInfo::location(QLibraryInfo::TranslationsPath), {})
-    ) {
-        qWarning("Could not load system translation files");
-    }
-    app.installTranslator(&qtTranslator);
-    QTranslator appTranslator;
-    if (!appTranslator.load(
-        QLocale(), "pscom-cli", "_",
-        QFileInfo(app.applicationDirPath()).absoluteDir()
-            .absoluteFilePath("resources/translations"))
-    ) {
-        qWarning("Could not load application translation files");
-    }
-    app.installTranslator(&appTranslator);
+    setupTranslators(app);
 
     IPscomCore *core = new PscomAdapter();
 
@@ -382,6 +368,26 @@ int main(int argc, char *argv[])
     parser.runCommand(engine);
 
     return EXIT_SUCCESS;
+}
+
+void setupTranslators(PscomApp & app) {
+    QTranslator qtTranslator;
+    if (!qtTranslator.load(
+        QLocale(), "qt", "_",
+        QLibraryInfo::location(QLibraryInfo::TranslationsPath), {})
+    ) {
+        qWarning("Could not load system translation files");
+    }
+    app.installTranslator(&qtTranslator);
+    QTranslator appTranslator;
+    if (!appTranslator.load(
+        QLocale(), "pscom-cli", "_",
+        QFileInfo(app.applicationDirPath()).absoluteDir()
+            .absoluteFilePath("resources/translations"))
+    ) {
+        qWarning("Could not load application translation files");
+    }
+    app.installTranslator(&appTranslator);
 }
 
 
